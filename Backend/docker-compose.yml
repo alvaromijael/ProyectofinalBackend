@@ -1,0 +1,13 @@
+services:
+  fastapi_app:
+    build: .
+    container_name: ecomerce
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - "C:/03-JavaScript/proyecto 4gen/Backend:/app"
+    environment:
+      MongoDB_URI: mongodb+srv://aquisilema:Wz7u!aQyA8.95gk@cluster0.6wxvgld.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      JWT_SECRET_KEY: secret123
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
