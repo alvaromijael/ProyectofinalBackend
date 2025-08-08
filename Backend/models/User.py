@@ -11,3 +11,9 @@ class User(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
+class UserUpdate(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    birth_date: str

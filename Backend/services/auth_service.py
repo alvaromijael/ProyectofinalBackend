@@ -1,4 +1,5 @@
-from fastapi import Depends, FastAPI
+from datetime import datetime, timedelta
+from fastapi import Request, HTTPException
 from database.mongo import db
 import bcrypt
 import jwt
@@ -35,7 +36,28 @@ def login(email,password):
     user_exist['_id']=str(user_exist['_id'])
     user_exist['password']=None
     secret_key=os.getenv('JWT_SECRET_KEY')
-    token = jwt.encode(user_exist, salt, algorithm='HS256')
-    return{'message': 'Logged in successfully','user':user_exist,"token":token}
+    payload={
+        "email":user_exist['email'],
+        "last_name":user_exist['last_name'],
+        "first_name":user_exist['first_name'],
+        "exp":datetime.utcnow() + timedelta(hours=1)
+    }
 
+    token = jwt.encode(payload, secret_key, algorithm='HS256')
+    return{'message': 'Logged in successfully','user':user_exist,"token":token}
+print(login('<EMAIL>','<PASSWORD>'))
+
+
+def profile_user(request: Request):
+    if not hasattr(request.state, "user"):
+        raise HTTPException(status_code=401, detail="Token required")
+    return {"message": request.state.user['user_name']}
+
+def get_user_by_email(email: str):
+    result = user_db.find_one({'email': email})
+    if not result:
+        raise HTTPException(status_code=404, detail="User not found")
+    result['_id'] = str(result['_id'])
+    result.pop('password', None)
+    return result
 
