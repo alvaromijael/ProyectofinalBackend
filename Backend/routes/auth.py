@@ -3,8 +3,8 @@ from fastapi.params import Depends
 from sqlalchemy.orm import Session
 
 from database.db import SessionLocal
-from services.auth_service import register
-from models.User import User,AuthUser
+from services.auth_service import register, login
+from models.User import User, AuthUser, UserLogin
 
 router = APIRouter(prefix="/auth", tags=["register"])
 
@@ -29,3 +29,9 @@ def login_route(user_login:UserLogin):
     email = user_login.email
     password = user_login.password
     return login(email,password)"""
+
+@router.post("/login")
+def login_route(user_login: UserLogin, db: Session = Depends(get_db)):
+    email = user_login.email
+    password = user_login.password
+    return login(email,password, db)

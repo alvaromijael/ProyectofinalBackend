@@ -12,9 +12,8 @@ import os
 
 user_db=db["users"]
 
-
 salt=bcrypt.gensalt()
-
+"""Registro con mongo"""
 """def register (user):
     data_user=user.model_dump()
 
@@ -90,13 +89,50 @@ def login(email,password):
     token = jwt.encode(payload, secret_key, algorithm='HS256')
     return{'message': 'Logged in successfully','user':user_exist,"token":token}
 print(login('<EMAIL>','<PASSWORD>'))
+"""
+def login(email: str, password: str, db: Session):
+    user_exist = db.query(AuthUser).filter(AuthUser.email == email).first()
+
+    if not user_exist:
+        return {'message': 'User does not exist'}
+
+    check_password = bcrypt.checkpw(password.encode('utf-8'), user_exist.password.encode('utf-8'))
+    if not check_password:
+        return {'message': 'Password incorrect'}
+
+    # Prepara el payload del JWT
+    secret_key = os.getenv('JWT_SECRET_KEY')
+    payload = {
+        "email": user_exist.email,
+        "last_name": user_exist.last_name,
+        "first_name": user_exist.first_name,
+        "exp": datetime.utcnow() + timedelta(hours=1)
+    }
+
+    token = jwt.encode(payload, secret_key, algorithm='HS256')
+
+    return {
+        'message': 'Logged in successfully',
+        'user': {
+            "email": user_exist.email,
+            "first_name": user_exist.first_name,
+            "last_name": user_exist.last_name,
+            "role": user_exist.role
+        },
+        "token": token
+    }
+
+
 
 
 def profile_user(request: Request):
     if not hasattr(request.state, "user"):
         raise HTTPException(status_code=401, detail="Token required")
     return {"message": request.state.user['user_name']}
-"""
+
+
+
+
 def get_user_by_email(email: str):
     result = user_db.find_one({'email': email})
     if not result:
