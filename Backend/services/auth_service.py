@@ -1,20 +1,25 @@
 from datetime import datetime, timedelta
-from fastapi import Request, HTTPException
+from fastapi import Request, HTTPException, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from database.db import SessionLocal
+
 from models.User import AuthUser,User
-from database.mongo import db
+
+"""from database.mongo import db"""
 import bcrypt
 import jwt
 import os
 
-user_db=db["users"]
+
 
 salt=bcrypt.gensalt()
+
 """Registro con mongo"""
-"""def register (user):
+
+"""
+    user_db=db["users"]
+    def register (user):
     data_user=user.model_dump()
 
     result_exist = user_db.find_one({'email': data_user['email']})
@@ -133,11 +138,15 @@ def profile_user(request: Request):
 
 
 
-def get_user_by_email(email: str):
-    result = user_db.find_one({'email': email})
+def get_user_by_email(email: str, db: Session):
+    result = db.query(AuthUser).filter(AuthUser.email == email).first()
     if not result:
         raise HTTPException(status_code=404, detail="User not found")
-    result['_id'] = str(result['_id'])
+
+    result = result.__dict__
     result.pop('password', None)
+    result['id'] = str(result['id'])  # si prefieres mantener el ID como string
+
     return result
+
 

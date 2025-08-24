@@ -1,4 +1,4 @@
-import os
+"""import os
 
 from pymongo.mongo_client import MongoClient
 uri = os.getenv("MongoDB_URI")
@@ -13,4 +13,4 @@ except Exception as e:
     print(e)
 
 db = client['ecomerce']
-collection = db['products']
+collection = db['products']"""
