@@ -24,3 +24,5 @@ app.add_middleware(
 app.add_middleware(AuthMiddleware)
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(patient.router)
+app.include_router(appointment.router)
