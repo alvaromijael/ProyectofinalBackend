@@ -4,6 +4,8 @@ from middleware.auth import AuthMiddleware
 
 from routes import auth
 from routes import users
+from routes import patient
+from routes import appointment
 
 app = FastAPI()
 
