@@ -8,21 +8,69 @@ from services.appointment_service import (
     create_appointment,
     get_appointments,
     get_appointment_by_id,
-    get_appointments_by_patient,
-    get_appointments_by_date_range,
     search_appointments,
     update_appointment,
     delete_appointment,
     get_today_appointments,
     get_appointment_count_by_patient,
-    get_upcoming_appointments,
-    get_appointments_by_status
 )
 from schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentResponse
 from database.db import get_db
 
 router = APIRouter(prefix="/appointments", tags=["appointments"])
 
+
+
+@router.get("/search", response_model=List[AppointmentResponse])
+def search_appointments_endpoint(
+        db: Session = Depends(get_db),
+        query: str = Query(default="", description="Buscar por nombre, apellido o cédula del paciente"),
+        start_date: Optional[date] = Query(None, description="Fecha de inicio (YYYY-MM-DD)"),
+        end_date: Optional[date] = Query(None, description="Fecha de fin (YYYY-MM-DD)"),
+        skip: int = Query(0, ge=0, description="Número de registros a omitir"),
+        limit: int = Query(100, ge=1, le=1000, description="Límite de registros")
+):
+    """
+    Buscar citas médicas con múltiples criterios:
+    - Por nombre, apellido o cédula del paciente
+    - Por rango de fechas
+    - Combinación de ambos criterios
+
+    Ejemplos de uso:
+    - `/appointments/search?query=Juan` - Busca pacientes con nombre Juan
+    - `/appointments/search?start_date=2024-01-01&end_date=2024-01-31` - Citas de enero 2024
+    - `/appointments/search?query=12345&start_date=2024-01-01` - Paciente con cédula 12345 desde enero
+    """
+
+    try:
+        # Convertir string vacío a None para la lógica de búsqueda
+        search_query = query.strip() if query.strip() else None
+
+        # Validar que al menos un criterio de búsqueda esté presente
+        if not search_query and not start_date and not end_date:
+            raise HTTPException(
+                status_code=400,
+                detail="Debe proporcionar al menos un criterio de búsqueda: query, start_date o end_date"
+            )
+
+        appointments = search_appointments(
+            db=db,
+            query=search_query,
+            start_date=start_date,
+            end_date=end_date,
+            skip=skip,
+            limit=limit
+        )
+
+        return appointments
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno del servidor al buscar citas"
+        )
 
 @router.post("/", response_model=AppointmentResponse, status_code=201)
 def create_new_appointment(
@@ -50,15 +98,6 @@ def get_today_appointments_route(db: Session = Depends(get_db)):
     return get_today_appointments(db)
 
 
-@router.get("/upcoming", response_model=List[AppointmentResponse])
-def get_upcoming_appointments_route(
-    days_ahead: int = Query(7, ge=1, le=365, description="Días hacia adelante"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    db: Session = Depends(get_db)
-):
-    """Obtener citas próximas en los próximos N días"""
-    return get_upcoming_appointments(db, days_ahead, skip, limit)
 
 
 @router.get("/search", response_model=List[AppointmentResponse])
@@ -72,43 +111,13 @@ def search_appointments_route(
     return search_appointments(db, q, skip, limit)
 
 
-@router.get("/by-date-range", response_model=List[AppointmentResponse])
-def get_appointments_by_date_range_route(
-    start_date: date = Query(..., description="Fecha de inicio (YYYY-MM-DD)"),
-    end_date: date = Query(..., description="Fecha de fin (YYYY-MM-DD)"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    db: Session = Depends(get_db)
-):
-    """Obtener citas en un rango de fechas"""
-    if start_date > end_date:
-        raise HTTPException(
-            status_code=400,
-            detail="La fecha de inicio debe ser anterior o igual a la fecha de fin"
-        )
-    return get_appointments_by_date_range(db, start_date, end_date, skip, limit)
 
 
-@router.get("/by-status/{status_filter}", response_model=List[AppointmentResponse])
-def get_appointments_by_status_route(
-    status_filter: str,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    db: Session = Depends(get_db)
-):
-    """Obtener citas por estado"""
-    return get_appointments_by_status(db, status_filter, skip, limit)
 
 
-@router.get("/patient/{patient_id}", response_model=List[AppointmentResponse])
-def get_appointments_by_patient_route(
-    patient_id: int,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    db: Session = Depends(get_db)
-):
-    """Obtener citas de un paciente específico"""
-    return get_appointments_by_patient(db, patient_id, skip, limit)
+
+
+
 
 
 @router.get("/patient/{patient_id}/count")
@@ -160,3 +169,5 @@ def delete_appointment_route(
             status_code=500,
             detail="Error interno al eliminar la cita"
         )
+
+
