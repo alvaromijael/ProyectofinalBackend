@@ -40,7 +40,7 @@ def register(user: User, db: Session):
     # Verificar si el usuario ya existe
     existing_user = db.query(AuthUser).filter(AuthUser.email == user.email).first()
     if existing_user:
-        raise HTTPException(status_code=400, detail="User already exists")
+        raise HTTPException(status_code=400, detail="El usuario  ya existe")
 
     # Generar un nuevo salt y hashear la contraseña
     salt = bcrypt.gensalt()
