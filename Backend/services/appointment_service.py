@@ -4,7 +4,7 @@ from models.Appointment import Appointment
 from models.Patient import Patient
 from schemas.appointment import AppointmentCreate, AppointmentUpdate
 from typing import List, Optional
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from fastapi import HTTPException, status
 
 
@@ -65,61 +65,52 @@ def get_appointment_by_id(db: Session, appointment_id: int) -> Optional[Appointm
             .filter(Appointment.id == appointment_id).first())
 
 
-def get_appointments_by_patient(
-        db: Session,
-        patient_id: int,
-        skip: int = 0,
-        limit: int = 100
-) -> List[Appointment]:
-    """Obtener citas de un paciente específico"""
-    return (db.query(Appointment)
-            .options(joinedload(Appointment.patient))
-            .filter(Appointment.patient_id == patient_id)
-            .order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time))
-            .offset(skip).limit(limit).all())
-
-
-def get_appointments_by_date_range(
-        db: Session,
-        start_date: date,
-        end_date: date,
-        skip: int = 0,
-        limit: int = 100
-) -> List[Appointment]:
-    """Obtener citas en un rango de fechas"""
-    return (db.query(Appointment)
-            .options(joinedload(Appointment.patient))
-            .filter(
-        and_(
-            Appointment.appointment_date >= start_date,
-            Appointment.appointment_date <= end_date
-        )
-    )
-            .order_by(asc(Appointment.appointment_date), asc(Appointment.appointment_time))
-            .offset(skip).limit(limit).all())
-
 
 def search_appointments(
         db: Session,
-        query: str,
+        query: Optional[str] = None,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
         skip: int = 0,
         limit: int = 100
 ) -> List[Appointment]:
-    """Buscar citas por nombre, apellido o cédula del paciente"""
-    # Preparar el término de búsqueda para LIKE
-    search_term = f"%{query.lower()}%"
+    """
+    Buscar citas médicas con múltiples criterios:
+    - Por nombre, apellido o cédula del paciente
+    - Por rango de fechas
+    - Combinación de ambos criterios
+    """
+    # Construir la consulta base
+    db_query = db.query(Appointment).options(joinedload(Appointment.patient))
 
-    return (db.query(Appointment)
-            .options(joinedload(Appointment.patient))
-            .join(Patient)
-            .filter(
-        or_(
+    # Lista de condiciones a aplicar
+    conditions = []
+
+    # Filtro por texto (nombre, apellido, cédula, diagnóstico)
+    if query and query.strip():
+        search_term = f"%{query.lower()}%"
+        db_query = db_query.join(Patient)
+        text_conditions = or_(
             func.lower(Patient.first_name).like(search_term),
             func.lower(Patient.last_name).like(search_term),
-            Patient.document_id.contains(query),
+            Patient.document_id.contains(query.strip()),
             func.lower(Appointment.diagnosis_description).like(search_term)
         )
-    )
+        conditions.append(text_conditions)
+
+    # Filtro por rango de fechas
+    if start_date:
+        conditions.append(Appointment.appointment_date >= start_date)
+
+    if end_date:
+        conditions.append(Appointment.appointment_date <= end_date)
+
+    # Aplicar todas las condiciones
+    if conditions:
+        db_query = db_query.filter(and_(*conditions))
+
+    # Aplicar ordenamiento y paginación
+    return (db_query
             .order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time))
             .offset(skip).limit(limit).all())
 
@@ -201,37 +192,5 @@ def get_appointment_count_by_patient(db: Session, patient_id: int) -> int:
             .filter(Appointment.patient_id == patient_id).count())
 
 
-def get_upcoming_appointments(
-        db: Session,
-        days_ahead: int = 7,
-        skip: int = 0,
-        limit: int = 100
-) -> List[Appointment]:
-    """Obtener citas próximas en los próximos N días"""
-    today = date.today()
-    future_date = today + timedelta(days=days_ahead)
-
-    return (db.query(Appointment)
-            .options(joinedload(Appointment.patient))
-            .filter(
-        and_(
-            Appointment.appointment_date >= today,
-            Appointment.appointment_date <= future_date
-        )
-    )
-            .order_by(asc(Appointment.appointment_date), asc(Appointment.appointment_time))
-            .offset(skip).limit(limit).all())
 
 
-def get_appointments_by_status(
-        db: Session,
-        status_filter: str,
-        skip: int = 0,
-        limit: int = 100
-) -> List[Appointment]:
-    """Obtener citas por estado (si el modelo tiene campo status)"""
-    return (db.query(Appointment)
-            .options(joinedload(Appointment.patient))
-            .filter(Appointment.status == status_filter)
-            .order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time))
-            .offset(skip).limit(limit).all())
