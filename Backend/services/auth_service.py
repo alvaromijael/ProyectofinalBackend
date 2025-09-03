@@ -103,7 +103,9 @@ def login(email: str, password: str, db: Session):
 
     check_password = bcrypt.checkpw(password.encode('utf-8'), user_exist.password.encode('utf-8'))
     if not check_password:
-        return {'message': 'Password incorrect'}
+        raise HTTPException(status_code=401, detail='Password incorrect')
+        # return {'message': 'Password incorrect'}
+
 
     # Prepara el payload del JWT
     secret_key = os.getenv('JWT_SECRET_KEY')

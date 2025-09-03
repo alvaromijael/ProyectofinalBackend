@@ -46,4 +46,5 @@ class Appointment(Base):
 
 # También necesitas agregar esta relación en tu modelo Patient:
 # En el archivo models/Patient.py, agrega esta línea después de la relación contacts:
-# appointments = relationship("Appointment", back_populates="patient", cascade="all, delete-orphan")
+# appointments = relations
+# hip("Appointment", back_populates="patient", cascade="all, delete-orphan")

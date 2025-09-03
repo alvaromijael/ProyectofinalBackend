@@ -1,7 +1,7 @@
 
 from bson import ObjectId
 from sqlalchemy.orm import Session
-from models.User import AuthUser, Role
+from models.User import AuthUser, Role, PasswordChange
 from typing import Optional
 from datetime import datetime
 from fastapi import HTTPException
@@ -62,6 +62,22 @@ def update_user(db: Session, user_id: int, user_data):
     db.refresh(user)
 
     return {"message": "User updated successfully"}
+
+def change_user_password(db: Session, user_id: int, data: PasswordChange):
+    user = db.query(AuthUser).filter(AuthUser.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Verifica la contraseña actual
+    if not user.verify_password(data.current_password):
+        raise HTTPException(status_code=400, detail="Contraseña actual incorrecta")
+
+    # Actualiza la contraseña
+    user.set_password(data.new_password)
+    db.commit()
+    db.refresh(user)
+
+    return {"message": "Contraseña actualizada correctamente"}
 
 
 def get_user(db: Session, user_id: int):

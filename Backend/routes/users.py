@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, HTTPException
-from services.user_service import get_users, update_user, get_user, delete_user,get_roles
-from models.User import UserUpdate
+from services.user_service import get_users, update_user, get_user, delete_user, get_roles, change_user_password
+from models.User import UserUpdate, PasswordChange
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from database.db import SessionLocal, get_db
@@ -24,6 +24,19 @@ def update_user_router(request: Request, user_id: str, user: UserUpdate):
     if not hasattr(request.state, "user"):
         raise HTTPException(status_code=401, detail="Unauthorized")
     return update_user(user_id = user_id, user= user)
+
+@router.post("/change-password")
+def change_password_route(
+    request: Request,
+    data: PasswordChange,
+    db: Session = Depends(get_db)
+):
+    if not hasattr(request.state, "user"):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    user_id = request.state.user.id
+    return change_user_password(db=db, user_id=user_id, data=data)
+
 
 @router.get("/{user_id}")
 def get_user_route(request: Request, user_id: str):

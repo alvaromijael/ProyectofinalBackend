@@ -24,6 +24,10 @@ class UserUpdate(BaseModel):
     last_name: str
     email: str
     birth_date: str
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
 
 class AuthUser(Base):
     __tablename__ = 'auth_users'
