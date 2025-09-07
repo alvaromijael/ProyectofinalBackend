@@ -2,9 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-data="postgresql+psycopg2://admin:admin123@localhost:5432/fenixweb"
+data="postgresql+psycopg2://postgres:sa@localhost:5432/femixweb3"
 DATABASE_URL = os.getenv("DATABASE_URL")
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(data, echo=True)
 try:
     with engine.connect() as connection:
         print("Connected to database Postgress")

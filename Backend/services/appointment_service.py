@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_, func, desc, asc
 from models.Appointment import Appointment
 from models.Patient import Patient
+from models.Recipe import Recipe
 from schemas.appointment import AppointmentCreate, AppointmentUpdate
 from typing import List, Optional
 from datetime import date, datetime
@@ -33,26 +34,47 @@ def create_appointment(db: Session, appointment_data: AppointmentCreate) -> Appo
             detail=f"Ya existe una cita programada para {appointment_data.appointment_date} a las {appointment_data.appointment_time}"
         )
 
-    # Crear la nueva cita
-    db_appointment = Appointment(**appointment_data.model_dump())
+    # ✅ EXTRAER RECETAS ANTES Y REMOVER DEL DICT
+    recipes_data = appointment_data.recipes or []
+    appointment_dict = appointment_data.model_dump()
+    appointment_dict.pop('recipes', None)  # Remover recipes del dict
+
+    # Crear la nueva cita SIN las recetas
+    db_appointment = Appointment(**appointment_dict)
     db.add(db_appointment)
+    db.flush()  # Para obtener el ID
+
+    # ✅ CREAR LAS RECETAS POR SEPARADO
+    for recipe_data in recipes_data:
+        db_recipe = Recipe(
+            appointment_id=db_appointment.id,
+            medicine=recipe_data.medicine,
+            amount=recipe_data.amount,
+            instructions=recipe_data.instructions,
+            observations=recipe_data.observations
+        )
+        db.add(db_recipe)
+
     db.commit()
     db.refresh(db_appointment)
 
     return db_appointment
 
-
 def get_appointments(
         db: Session,
         skip: int = 0,
         limit: int = 100,
-        include_patient: bool = True
+        include_patient: bool = True,
+        include_recipes: bool = True  # Nuevo parámetro opcional
 ) -> List[Appointment]:
     """Obtener lista de citas con paginación"""
     query = db.query(Appointment)
 
     if include_patient:
         query = query.options(joinedload(Appointment.patient))
+
+    if include_recipes:
+        query = query.options(joinedload(Appointment.recipes))
 
     return query.order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time)).offset(skip).limit(
         limit).all()
@@ -115,6 +137,7 @@ def search_appointments(
             .offset(skip).limit(limit).all())
 
 
+
 def update_appointment(
         db: Session,
         appointment_id: int,
@@ -144,17 +167,44 @@ def update_appointment(
                 detail=f"Ya existe otra cita programada para {appointment_data.appointment_date} a las {appointment_data.appointment_time}"
             )
 
-    # Actualizar solo los campos proporcionados
-    update_data = appointment_data.model_dump(exclude_unset=True)
+    # 1. Actualizar campos simples EXCLUYENDO relaciones
+    update_data = appointment_data.model_dump(
+        exclude_unset=True,
+        exclude={'recipes'}
+    )
+
     for field, value in update_data.items():
         setattr(db_appointment, field, value)
+
+    # 2. Manejar recipes por separado
+    if appointment_data.recipes is not None:
+        # Limpiar recetas existentes
+        db_appointment.recipes.clear()
+
+        # Agregar/crear nuevas recetas
+        for recipe_update in appointment_data.recipes:
+            # Si el RecipeUpdate tiene ID, actualizar receta existente
+            if hasattr(recipe_update, 'id') and recipe_update.id:
+                existing_recipe = db.query(Recipe).filter(Recipe.id == recipe_update.id).first()
+                if existing_recipe:
+                    # Actualizar receta existente
+                    recipe_data = recipe_update.model_dump(exclude_unset=True, exclude={'id'})
+                    for field, value in recipe_data.items():
+                        setattr(existing_recipe, field, value)
+                    db_appointment.recipes.append(existing_recipe)
+            else:
+                # Crear nueva receta
+                recipe_data = recipe_update.model_dump(exclude_unset=True, exclude={'id'})
+                recipe_data['appointment_id'] = appointment_id  # Asegurar la relación
+                new_recipe = Recipe(**recipe_data)
+                db.add(new_recipe)
+                db_appointment.recipes.append(new_recipe)
 
     db_appointment.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(db_appointment)
 
     return db_appointment
-
 
 def delete_appointment(db: Session, appointment_id: int) -> bool:
     """Eliminar una cita"""

@@ -2,6 +2,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, Date, Time, Text, DateTime, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 from database.db import Base
+from models.Recipe import Recipe
 
 
 class Appointment(Base):
@@ -44,6 +45,8 @@ class Appointment(Base):
     # Relationship to patient
     patient = relationship("Patient", back_populates="appointments")
 
+    # En appointment.py
+    recipes = relationship("Recipe", back_populates="appointment", cascade="all, delete-orphan")
 # También necesitas agregar esta relación en tu modelo Patient:
 # En el archivo models/Patient.py, agrega esta línea después de la relación contacts:
 # appointments = relations

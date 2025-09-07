@@ -6,6 +6,7 @@ from routes import auth
 from routes import users
 from routes import patient
 from routes import appointment
+from routes import report
 
 app = FastAPI()
 
@@ -31,3 +32,5 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(patient.router)
 app.include_router(appointment.router)
+
+app.include_router(report.router)

@@ -1,8 +1,40 @@
 from pydantic import BaseModel, Field, validator
-from typing import Optional
+from typing import Optional, List
 from datetime import date, time, datetime
 
 
+# Esquemas para Recipe
+class RecipeBase(BaseModel):
+    medicine: str = Field(..., description="Nombre del medicamento")
+    amount: str = Field(..., description="Cantidad/dosis del medicamento")
+    instructions: str = Field(..., description="Instrucciones de uso")
+    observations: Optional[str] = Field(None, description="Observaciones adicionales")
+
+
+class RecipeCreate(RecipeBase):
+    pass
+
+
+class RecipeUpdate(BaseModel):
+    medicine: Optional[str] = Field(None, description="Nombre del medicamento")
+    amount: Optional[str] = Field(None, description="Cantidad/dosis del medicamento")
+    instructions: Optional[str] = Field(None, description="Instrucciones de uso")
+    observations: Optional[str] = Field(None, description="Observaciones adicionales")
+
+
+class RecipeResponse(BaseModel):
+    id: int
+    appointment_id: int
+    medicine: str
+    amount: str
+    instructions: str
+    observations: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+# Esquemas existentes actualizados
 class VitalSigns(BaseModel):
     temperature: Optional[str] = Field(None, description="Temperatura corporal en °C")
     blood_pressure: Optional[str] = Field(None, description="Presión arterial (ej: 120/80)")
@@ -35,10 +67,8 @@ class AppointmentBase(BaseModel):
     height: Optional[str] = Field(None, description="Talla")
 
 
-
-
 class AppointmentCreate(AppointmentBase):
-    pass
+    recipes: Optional[List[RecipeCreate]] = Field(default_factory=list)
 
 
 class AppointmentUpdate(BaseModel):
@@ -57,7 +87,7 @@ class AppointmentUpdate(BaseModel):
     oxygen_saturation: Optional[str] = Field(None, description="Saturación de oxígeno")
     weight: Optional[str] = Field(None, description="Peso")
     height: Optional[str] = Field(None, description="Talla")
-
+    recipes: Optional[List[RecipeUpdate]] = Field(None, description="Lista de recetas médicas")
 
 
 class PatientBasic(BaseModel):
@@ -91,6 +121,7 @@ class AppointmentResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
     patient: Optional[PatientBasic] = None
+    recipes: Optional[List[RecipeResponse]] = Field(default_factory=list, description="Lista de recetas médicas")
 
     class Config:
         from_attributes = True

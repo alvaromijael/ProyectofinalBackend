@@ -1,0 +1,302 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="Recipe" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2d4d51f7-b42b-4ad0-8991-673246836554">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="FenixWeb"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="filtro" class="java.lang.String">
+		<defaultValueExpression><![CDATA[9]]></defaultValueExpression>
+	</parameter>
+	<query language="sql"><![CDATA[SELECT medical.patients.first_name,
+	medical.patients.last_name,
+	medical.patients.age,
+	medical.patients.gender,
+	medical.patients.document_id,
+	medical.appointments.appointment_date,
+	medical.appointments.current_illness,
+	medical.appointments.physical_examination,
+	medical.appointments.diagnosis_code,
+	medical.appointments.diagnosis_description,
+	medical.appointments.observations,
+	medical.appointments.laboratory_tests,
+	medical.recipe.medicine,
+	medical.recipe.amount,
+	medical.recipe.instructions,
+	medical.recipe.observations as recipe_observations
+FROM medical.recipe
+	INNER JOIN medical.appointments ON
+	 medical.recipe.appointment_id = medical.appointments.id
+	INNER JOIN medical.patients ON
+	 medical.appointments.patient_id = medical.patients.id
+	 WHERE medical.appointments.id = $P!{filtro}]]></query>
+	<field name="first_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="first_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="first_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="last_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="last_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="last_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="age" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="age"/>
+		<property name="com.jaspersoft.studio.field.label" value="age"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="gender" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="gender"/>
+		<property name="com.jaspersoft.studio.field.label" value="gender"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="document_id" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="document_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="document_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="appointment_date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="appointment_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="appointment_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="current_illness" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="current_illness"/>
+		<property name="com.jaspersoft.studio.field.label" value="current_illness"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="physical_examination" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="physical_examination"/>
+		<property name="com.jaspersoft.studio.field.label" value="physical_examination"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="diagnosis_code" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diagnosis_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="diagnosis_code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="diagnosis_description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diagnosis_description"/>
+		<property name="com.jaspersoft.studio.field.label" value="diagnosis_description"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="observations" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="observations"/>
+		<property name="com.jaspersoft.studio.field.label" value="observations"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="laboratory_tests" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="laboratory_tests"/>
+		<property name="com.jaspersoft.studio.field.label" value="laboratory_tests"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="medicine" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="medicine"/>
+		<property name="com.jaspersoft.studio.field.label" value="medicine"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
+	</field>
+	<field name="amount" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="amount"/>
+		<property name="com.jaspersoft.studio.field.label" value="amount"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
+	</field>
+	<field name="instructions" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="instructions"/>
+		<property name="com.jaspersoft.studio.field.label" value="instructions"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
+	</field>
+	<field name="recipe_observations" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="recipe_observations"/>
+		<property name="com.jaspersoft.studio.field.label" value="recipe_observations"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
+	</field>
+	<variable name="patient_full_name" resetType="None" class="java.lang.String">
+		<expression><![CDATA[$F{first_name} + " " + $F{last_name}]]></expression>
+	</variable>
+	<variable name="record_count" calculation="Count" class="java.lang.Integer">
+		<expression><![CDATA[$F{medicine}]]></expression>
+	</variable>
+	<background splitType="Stretch"/>
+	<title height="70" splitType="Stretch">
+		<element kind="staticText" uuid="a1962fd8-fe47-42e6-9b77-99a863299c86" x="0" y="0" width="150" height="30" fontName="Arial" fontSize="18.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+			<text><![CDATA[Fenix]]></text>
+		</element>
+		<element kind="line" uuid="0a7fdacb-f10c-49b8-943c-e43429d231c9" x="0" y="50" width="555" height="1">
+			<pen lineWidth="1.0" lineColor="#CCCCCC"/>
+		</element>
+		<element kind="staticText" uuid="72e61e3e-a1dd-477a-af9b-5ad0fc53016e" x="0" y="50" width="120" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[FECHA DE EMISIÓN:]]></text>
+		</element>
+		<element kind="textField" uuid="93ce9b55-6645-4c72-bad7-cb3858421d40" x="120" y="50" width="200" height="20" fontSize="10.0" pattern="EEEEE dd MMMMM yyyy HH:mm a" vTextAlign="Middle">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+		</element>
+		<element kind="image" uuid="ed778df3-839a-4a86-bc63-351828190096" x="500" y="0" width="60" height="50">
+			<expression><![CDATA["C:/Users/Boris/Downloads/Imagen de WhatsApp 2025-08-24 a las 20.15.32_cbf14921.jpg"]]></expression>
+		</element>
+	</title>
+	<pageHeader height="135" splitType="Stretch">
+		<element kind="staticText" uuid="644229a0-4413-40c8-ac38-e2e952dba985" x="0" y="10" width="120" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Nombre paciente:]]></text>
+		</element>
+		<element kind="textField" uuid="27ad9212-37e8-4ca9-9e7d-4c5fcf7bd52b" x="120" y="10" width="434" height="20" fontSize="10.0" vTextAlign="Middle">
+			<expression><![CDATA[$V{patient_full_name}]]></expression>
+		</element>
+		<element kind="staticText" uuid="3b3aa48d-a84c-461f-8dc6-15a167d0711d" x="0" y="30" width="120" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Cédula paciente:]]></text>
+		</element>
+		<element kind="textField" uuid="2d5e2383-d7f5-49f9-8aff-a7834430ead6" x="120" y="30" width="150" height="20" fontSize="10.0" vTextAlign="Middle">
+			<expression><![CDATA[$F{document_id}]]></expression>
+		</element>
+		<element kind="staticText" uuid="d9d05c53-bc9f-4fba-9829-2aaba1777ed1" x="270" y="30" width="100" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Edad:]]></text>
+		</element>
+		<element kind="textField" uuid="2e5e267f-a3ba-48d6-aa7e-c1bbed3e8147" x="370" y="30" width="184" height="20" fontSize="10.0" vTextAlign="Middle">
+			<expression><![CDATA[$F{age}]]></expression>
+		</element>
+		<element kind="staticText" uuid="45ceaf95-2586-42bf-b412-62b0d2fd35af" x="0" y="50" width="120" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Sexo paciente:]]></text>
+		</element>
+		<element kind="textField" uuid="d4e49b8c-c50d-4d8c-ab07-a45062368ce8" x="120" y="50" width="150" height="20" fontSize="10.0" vTextAlign="Middle">
+			<expression><![CDATA[$F{gender}]]></expression>
+		</element>
+		<element kind="staticText" uuid="e2b338e5-ed10-4679-9eb5-6ad36b322795" x="270" y="50" width="100" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Fecha de cita:]]></text>
+		</element>
+		<element kind="textField" uuid="3b487deb-babd-441f-9f01-d81b92ff74a1" x="370" y="50" width="184" height="20" fontSize="10.0" pattern="dd/MM/yyyy" vTextAlign="Middle">
+			<expression><![CDATA[$F{appointment_date}]]></expression>
+		</element>
+		<element kind="staticText" uuid="893a9149-390a-4589-a5c5-d191cc34bb7f" x="0" y="70" width="120" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Diagnóstico:]]></text>
+		</element>
+		<element kind="textField" uuid="df234349-dec0-426b-8c61-92d7132a1f8d" x="120" y="70" width="80" height="20" fontSize="10.0" vTextAlign="Middle">
+			<expression><![CDATA[$F{diagnosis_code}]]></expression>
+		</element>
+		<element kind="textField" uuid="a59120e6-9e65-41ab-a8bc-cec532835c61" x="200" y="70" width="354" height="20" fontSize="10.0" textAdjust="StretchHeight" vTextAlign="Middle">
+			<expression><![CDATA[$F{diagnosis_description}]]></expression>
+		</element>
+		<element kind="staticText" uuid="a9c5c1c3-767c-4bd4-b997-d1b0fa49eddb" x="0" y="90" width="120" height="20" fontSize="10.0" bold="true" vTextAlign="Top">
+			<text><![CDATA[Enfermedad actual:]]></text>
+		</element>
+		<element kind="textField" uuid="46c9b1de-1746-421c-be9f-4203672683d2" x="120" y="90" width="435" height="20" fontSize="9.0" textAdjust="StretchHeight" vTextAlign="Top">
+			<expression><![CDATA[$F{current_illness}]]></expression>
+		</element>
+		<element kind="staticText" uuid="e2d1ef5a-1112-40f2-9ec4-88d2da93d5bc" x="0" y="110" width="120" height="20" fontSize="10.0" bold="true" vTextAlign="Top">
+			<text><![CDATA[Examen físico:]]></text>
+		</element>
+		<element kind="textField" uuid="b0cbafd4-2a1a-472f-9f22-2531fcf47984" x="119" y="110" width="435" height="20" fontSize="9.0" textAdjust="StretchHeight" vTextAlign="Top">
+			<expression><![CDATA[$F{physical_examination}]]></expression>
+		</element>
+	</pageHeader>
+	<columnHeader height="50" splitType="Stretch">
+		<element kind="rectangle" uuid="af51da23-7d56-4cfa-a8d0-732b30fcc941" x="0" y="10" width="555" height="30" backcolor="#F0F0F0">
+			<pen lineWidth="1.0" lineColor="#CCCCCC"/>
+		</element>
+		<element kind="staticText" uuid="b9aaee32-3e84-44b2-88bd-c0fab7885cda" x="10" y="15" width="200" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Medicamento]]></text>
+		</element>
+		<element kind="staticText" uuid="1c6fcebd-8ed9-4f01-849f-c0ddf6b3926e" x="220" y="15" width="80" height="20" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Cantidad]]></text>
+		</element>
+		<element kind="staticText" uuid="8d931e89-8ebc-4bd9-b944-002361a4d7e7" x="310" y="15" width="150" height="20" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Indicaciones]]></text>
+		</element>
+		<element kind="staticText" uuid="d67f983f-5261-40be-9e58-f91a71c05f36" x="470" y="15" width="80" height="20" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Observaciones]]></text>
+		</element>
+		<element kind="line" uuid="63dfc8be-911e-44ee-8ebb-9f733452578b" x="210" y="10" width="1" height="30"/>
+		<element kind="line" uuid="8b641881-6156-479c-9258-67876d9b2a58" x="300" y="10" width="1" height="30"/>
+		<element kind="line" uuid="cc10c1e8-5cc3-4eab-94ff-86adebeea5a0" x="460" y="10" width="1" height="30"/>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<element kind="rectangle" uuid="65a5ad7e-74d0-411b-a51c-ad74b8ed8bea" x="0" y="-12" width="555" height="30">
+				<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+			</element>
+			<element kind="textField" uuid="a73ff0a8-15f6-45b9-b949-dae0a7663821" x="10" y="-10" width="190" height="26" fontSize="9.0" textAdjust="StretchHeight" vTextAlign="Top">
+				<expression><![CDATA[$F{medicine}]]></expression>
+			</element>
+			<element kind="textField" uuid="e378f230-a93d-47d6-b970-91dbd1152993" x="220" y="-10" width="70" height="26" fontSize="9.0" hTextAlign="Center" vTextAlign="Top">
+				<expression><![CDATA[$F{amount}]]></expression>
+			</element>
+			<element kind="textField" uuid="7e4219f9-d825-426d-a3e3-ed3272087870" x="310" y="-10" width="140" height="26" fontSize="8.0" textAdjust="StretchHeight" vTextAlign="Top">
+				<expression><![CDATA[$F{instructions}]]></expression>
+			</element>
+			<element kind="textField" uuid="291ee0db-37bf-4aa9-a946-dc6e0fa929e3" x="470" y="-10" width="80" height="26" fontSize="8.0" textAdjust="StretchHeight" vTextAlign="Top">
+				<expression><![CDATA[$F{recipe_observations}]]></expression>
+			</element>
+			<element kind="line" uuid="56041733-6858-4ea2-86d4-641d269b5f44" x="210" y="-12" width="1" height="30"/>
+			<element kind="line" uuid="aec3ca15-d061-4834-ad3d-757d86b6d54f" x="300" y="-12" width="1" height="30"/>
+			<element kind="line" uuid="c51ad984-f981-47f1-b411-7aa8ab92d08a" x="460" y="-12" width="1" height="30"/>
+		</band>
+	</detail>
+	<columnFooter height="120" splitType="Stretch">
+		<element kind="line" uuid="d94cf01c-fdce-4c85-ac28-84386572cbfa" x="0" y="0" width="555" height="1">
+			<pen lineWidth="1.0" lineColor="#CCCCCC"/>
+		</element>
+		<element kind="staticText" uuid="b32307bf-247d-456e-94d1-ff46dfb9f022" x="0" y="10" width="120" height="20" fontSize="10.0" bold="true" vTextAlign="Top">
+			<text><![CDATA[Observaciones:]]></text>
+		</element>
+		<element kind="textField" uuid="8b4fa81b-d24d-441b-9d03-61c8d58e53e3" x="120" y="10" width="435" height="30" fontSize="9.0" textAdjust="StretchHeight" blankWhenNull="true" vTextAlign="Top">
+			<expression><![CDATA[$F{observations}]]></expression>
+		</element>
+		<element kind="staticText" uuid="5d490bc6-5317-4639-b4a3-6f291f95ca69" x="0" y="50" width="120" height="20" fontSize="10.0" bold="true" vTextAlign="Top">
+			<text><![CDATA[Exámenes de lab:]]></text>
+		</element>
+		<element kind="textField" uuid="2bdbf27c-6e1c-4798-a707-8d4d9d73c013" x="120" y="50" width="435" height="30" fontSize="9.0" textAdjust="StretchHeight" blankWhenNull="true" vTextAlign="Top">
+			<expression><![CDATA[$F{laboratory_tests}]]></expression>
+		</element>
+		<element kind="line" uuid="dc722884-0138-45d8-b71f-568499c9f7fd" x="0" y="90" width="555" height="1">
+			<pen lineWidth="1.0" lineColor="#CCCCCC"/>
+		</element>
+	</columnFooter>
+	<pageFooter height="120" splitType="Stretch">
+		<element kind="staticText" uuid="c06dc66a-7f8f-4526-b61c-ee43e8ee74be" x="180" y="10" width="200" height="20" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[AUTORIZACIÓN DE SERVICIO]]></text>
+		</element>
+		<element kind="staticText" uuid="91f3de1f-1464-4995-93bb-0f5892e6a1bf" x="40" y="55" width="50" height="15" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Fecha:]]></text>
+		</element>
+		<element kind="textField" uuid="2119e1b4-947f-44d2-af70-3c9809f43e18" x="90" y="55" width="200" height="15" fontSize="10.0" pattern="EEEEE dd MMMMM yyyy HH:mm a" vTextAlign="Middle">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+		</element>
+		<element kind="staticText" uuid="ba6d4d2c-2b62-47ea-b780-6fdcff1d3e3a" x="40" y="75" width="50" height="15" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Firma:]]></text>
+		</element>
+		<element kind="rectangle" uuid="01c9cbd6-e072-4e9b-bfb8-fbfeaa516641" x="40" y="95" width="200" height="20">
+			<pen lineWidth="1.0" lineColor="#CCCCCC"/>
+		</element>
+		<element kind="staticText" uuid="711ad5ad-f36c-459e-8ff4-47b4fb77df93" x="300" y="75" width="200" height="30" fontSize="9.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Dr. [Nombre del Médico]
+MÉDICO GENERAL
+COD. MSP. INI: [Código]]]></text>
+		</element>
+	</pageFooter>
+	<summary height="60" splitType="Stretch">
+		<element kind="staticText" uuid="cd426ffa-5fb8-43e3-94ec-702603abe229" x="0" y="10" width="555" height="40" fontSize="8.0" bold="true" vTextAlign="Top">
+			<text><![CDATA[Signos de alarma: 1. Medidas generales, 2. Si mantienes fiebre, vómito persistente, alzas térmicas mayor a 38 grados acudir a emergencias, 3. Tomar abundante líquido, descanso, 4. Control por esta consulta en 5 días.]]></text>
+		</element>
+	</summary>
+	<noData height="300" splitType="Stretch">
+		<element kind="rectangle" uuid="f437a811-beb2-49a6-ba4d-b65f9be01612" x="0" y="10" width="555" height="30" backcolor="#F0F0F0">
+			<pen lineWidth="1.0" lineColor="#CCCCCC"/>
+		</element>
+		<element kind="staticText" uuid="7bd67f4e-da06-4c19-9968-5c18c2a2114d" x="10" y="15" width="200" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Medicamento]]></text>
+		</element>
+		<element kind="staticText" uuid="b4ed370b-240f-41c8-be91-459523565e96" x="220" y="15" width="80" height="20" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Cantidad]]></text>
+		</element>
+		<element kind="staticText" uuid="07cf0d3d-4a2f-4a8e-b248-4ebcc798cd64" x="310" y="15" width="150" height="20" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Indicaciones]]></text>
+		</element>
+		<element kind="staticText" uuid="b5438a8d-3373-4cb8-9312-8123b9c8c079" x="470" y="15" width="80" height="20" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Observaciones]]></text>
+		</element>
+		<element kind="line" uuid="b2d894e6-76e7-4bd4-89eb-0cc8519c7047" x="210" y="10" width="1" height="30"/>
+		<element kind="line" uuid="d68f1679-e687-4c09-a061-0144173c7788" x="300" y="10" width="1" height="30"/>
+		<element kind="line" uuid="5ce4ebde-fcdb-4830-be80-acd2804fda50" x="460" y="10" width="1" height="30"/>
+		<element kind="rectangle" uuid="d47f1905-e947-4578-9205-deb7ba90e5cf" x="0" y="40" width="555" height="50">
+			<pen lineWidth="1.0" lineColor="#CCCCCC"/>
+		</element>
+		<element kind="staticText" uuid="0086a809-d548-4197-b804-7ccb338da138" x="0" y="50" width="555" height="30" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[No hay recetas]]></text>
+		</element>
+	</noData>
+</jasperReport>
