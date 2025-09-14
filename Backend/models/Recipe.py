@@ -14,5 +14,4 @@ class Recipe(Base):
     amount = Column(String(100), nullable=False)
     instructions = Column(String(500), nullable=False)
     observations = Column(String(500), nullable=True)
-
     appointment = relationship("Appointment", back_populates="recipes")

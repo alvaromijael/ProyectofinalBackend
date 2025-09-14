@@ -3,7 +3,6 @@ from typing import Optional, List
 from datetime import date, time, datetime
 
 
-# Esquemas para Recipe
 class RecipeBase(BaseModel):
     medicine: str = Field(..., description="Nombre del medicamento")
     amount: str = Field(..., description="Cantidad/dosis del medicamento")
@@ -34,6 +33,34 @@ class RecipeResponse(BaseModel):
         from_attributes = True
 
 
+class DiagnosisBase(BaseModel):
+    diagnosis_code: str = Field(..., description="Código CIE-10")
+    diagnosis_description: str = Field(..., description="Descripción del diagnóstico")
+    diagnosis_type: Optional[str] = Field("secondary", description="Tipo de diagnóstico (primary/secondary)")
+
+
+class DiagnosisCreate(DiagnosisBase):
+    pass
+
+
+class DiagnosisUpdate(BaseModel):
+    diagnosis_code: Optional[str] = Field(None, description="Código CIE-10")
+    diagnosis_description: Optional[str] = Field(None, description="Descripción del diagnóstico")
+    diagnosis_type: Optional[str] = Field(None, description="Tipo de diagnóstico (primary/secondary)")
+
+
+class DiagnosisResponse(BaseModel):
+    id: int
+    appointment_id: int
+    diagnosis_code: str
+    diagnosis_description: str
+    diagnosis_type: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 # Esquemas existentes actualizados
 class VitalSigns(BaseModel):
     temperature: Optional[str] = Field(None, description="Temperatura corporal en °C")
@@ -44,9 +71,7 @@ class VitalSigns(BaseModel):
     height: Optional[str] = Field(None, description="Talla en cm")
 
 
-class DiagnosisInfo(BaseModel):
-    code: Optional[str] = Field(None, description="Código CIE-10")
-    description: Optional[str] = Field(None, description="Descripción del diagnóstico")
+# Removido DiagnosisInfo ya que ahora usamos DiagnosisResponse
 
 
 class AppointmentBase(BaseModel):
@@ -55,8 +80,6 @@ class AppointmentBase(BaseModel):
     appointment_time: time = Field(..., description="Hora de la cita")
     current_illness: Optional[str] = Field(None, description="Enfermedad actual")
     physical_examination: Optional[str] = Field(None, description="Examen físico")
-    diagnosis_code: Optional[str] = Field(None, description="Código CIE-10")
-    diagnosis_description: Optional[str] = Field(None, description="Descripción del diagnóstico")
     observations: Optional[str] = Field(None, description="Observaciones y tratamiento")
     laboratory_tests: Optional[str] = Field(None, description="Exámenes solicitados")
     temperature: Optional[str] = Field(None, description="Temperatura corporal")
@@ -68,7 +91,8 @@ class AppointmentBase(BaseModel):
 
 
 class AppointmentCreate(AppointmentBase):
-    recipes: Optional[List[RecipeCreate]] = Field(default_factory=list)
+    diagnoses: Optional[List[DiagnosisCreate]] = Field(default_factory=list, description="Lista de diagnósticos")
+    recipes: Optional[List[RecipeCreate]] = Field(default_factory=list, description="Lista de recetas médicas")
 
 
 class AppointmentUpdate(BaseModel):
@@ -77,8 +101,6 @@ class AppointmentUpdate(BaseModel):
     appointment_time: Optional[time] = Field(None, description="Hora de la cita")
     current_illness: Optional[str] = Field(None, description="Enfermedad actual")
     physical_examination: Optional[str] = Field(None, description="Examen físico")
-    diagnosis_code: Optional[str] = Field(None, description="Código CIE-10")
-    diagnosis_description: Optional[str] = Field(None, description="Descripción del diagnóstico")
     observations: Optional[str] = Field(None, description="Observaciones y tratamiento")
     laboratory_tests: Optional[str] = Field(None, description="Exámenes solicitados")
     temperature: Optional[str] = Field(None, description="Temperatura corporal")
@@ -87,6 +109,7 @@ class AppointmentUpdate(BaseModel):
     oxygen_saturation: Optional[str] = Field(None, description="Saturación de oxígeno")
     weight: Optional[str] = Field(None, description="Peso")
     height: Optional[str] = Field(None, description="Talla")
+    diagnoses: Optional[List[DiagnosisUpdate]] = Field(None, description="Lista de diagnósticos")
     recipes: Optional[List[RecipeUpdate]] = Field(None, description="Lista de recetas médicas")
 
 
@@ -108,8 +131,6 @@ class AppointmentResponse(BaseModel):
     appointment_time: time
     current_illness: Optional[str] = None
     physical_examination: Optional[str] = None
-    diagnosis_code: Optional[str] = None
-    diagnosis_description: Optional[str] = None
     observations: Optional[str] = None
     laboratory_tests: Optional[str] = None
     temperature: Optional[str] = None
@@ -121,6 +142,7 @@ class AppointmentResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
     patient: Optional[PatientBasic] = None
+    diagnoses: Optional[List[DiagnosisResponse]] = Field(default_factory=list, description="Lista de diagnósticos")
     recipes: Optional[List[RecipeResponse]] = Field(default_factory=list, description="Lista de recetas médicas")
 
     class Config:
@@ -130,7 +152,6 @@ class AppointmentResponse(BaseModel):
 class AppointmentWithPatientDetails(AppointmentResponse):
     # Campos adicionales para la vista completa
     vital_signs: Optional[VitalSigns] = None
-    diagnosis: Optional[DiagnosisInfo] = None
 
     @validator('vital_signs', pre=True, always=True)
     def build_vital_signs(cls, v, values):
@@ -141,11 +162,4 @@ class AppointmentWithPatientDetails(AppointmentResponse):
             oxygen_saturation=values.get('oxygen_saturation'),
             weight=values.get('weight'),
             height=values.get('height')
-        )
-
-    @validator('diagnosis', pre=True, always=True)
-    def build_diagnosis(cls, v, values):
-        return DiagnosisInfo(
-            code=values.get('diagnosis_code'),
-            description=values.get('diagnosis_description')
         )

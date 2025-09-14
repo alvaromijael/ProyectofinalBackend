@@ -20,10 +20,6 @@ class Appointment(Base):
     # Physical examination
     physical_examination = Column(Text, nullable=True)
 
-    # Diagnosis (CIE-10)
-    diagnosis_code = Column(String(10), nullable=True)
-    diagnosis_description = Column(Text, nullable=True)
-
     # Observations and treatment
     observations = Column(Text, nullable=True)
 
@@ -42,12 +38,22 @@ class Appointment(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, onupdate=datetime.datetime.utcnow)
 
-    # Relationship to patient
+    # Relationships
     patient = relationship("Patient", back_populates="appointments")
-
-    # En appointment.py
     recipes = relationship("Recipe", back_populates="appointment", cascade="all, delete-orphan")
-# También necesitas agregar esta relación en tu modelo Patient:
-# En el archivo models/Patient.py, agrega esta línea después de la relación contacts:
-# appointments = relations
-# hip("Appointment", back_populates="patient", cascade="all, delete-orphan")
+    diagnoses = relationship("AppointmentDiagnosis", back_populates="appointment", cascade="all, delete-orphan")
+
+
+class AppointmentDiagnosis(Base):
+    __tablename__ = "appointment_diagnoses"
+    __table_args__ = {"schema": "medical"}
+
+    id = Column(Integer, primary_key=True, index=True)
+    appointment_id = Column(Integer, ForeignKey("medical.appointments.id"), nullable=False, index=True)
+    diagnosis_code = Column(String(10), nullable=False, index=True)
+    diagnosis_description = Column(Text, nullable=False)
+    diagnosis_type = Column(String(20), nullable=True, default="secondary")  # 'primary', 'secondary'
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+
+    # Relationship
+    appointment = relationship("Appointment", back_populates="diagnoses")
