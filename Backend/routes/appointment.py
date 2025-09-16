@@ -10,11 +10,12 @@ from services.appointment_service import (
     get_appointment_by_id,
     search_appointments,
     update_appointment,
+    manage_appointment,
     delete_appointment,
     get_today_appointments,
     get_appointment_count_by_patient,
 )
-from schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentResponse
+from schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentResponse, AppointmentManage
 from database.db import get_db
 
 router = APIRouter(prefix="/appointments", tags=["appointments"])
@@ -153,6 +154,15 @@ def update_appointment_route(
 ):
     """Actualizar una cita existente"""
     return update_appointment(db, appointment_id, appointment_data)
+
+@router.put("/{appointment_id}", response_model=AppointmentResponse)
+def manage_appointment_route(
+    appointment_id: int,
+    appointment_data: AppointmentManage,
+    db: Session = Depends(get_db)
+):
+    """Gestionar una cita existente"""
+    return manage_appointment(db, appointment_id, appointment_data)
 
 
 @router.delete("/{appointment_id}")

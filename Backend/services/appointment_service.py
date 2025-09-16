@@ -3,7 +3,7 @@ from sqlalchemy import and_, or_, func, desc, asc
 from models.Appointment import Appointment, AppointmentDiagnosis
 from models.Patient import Patient
 from models.Recipe import Recipe
-from schemas.appointment import AppointmentCreate, AppointmentUpdate
+from schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentManage
 from typing import List, Optional
 from datetime import date, datetime
 from fastapi import HTTPException, status
@@ -323,3 +323,75 @@ def remove_diagnosis_from_appointment(db: Session, diagnosis_id: int) -> bool:
     db.delete(diagnosis)
     db.commit()
     return True
+
+
+
+def manage_appointment(
+        db: Session,
+        appointment_id: int,
+        appointment_data: AppointmentManage
+) -> Optional[Appointment]:
+    """Actualizar una cita existente"""
+    db_appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
+    if not db_appointment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cita con ID {appointment_id} no encontrada"
+        )
+
+    # Si se está actualizando la fecha/hora, verificar disponibilidad
+    if appointment_data.appointment_date and appointment_data.appointment_time:
+        existing_appointment = db.query(Appointment).filter(
+            and_(
+                Appointment.id != appointment_id,
+                Appointment.appointment_date == appointment_data.appointment_date,
+                Appointment.appointment_time == appointment_data.appointment_time
+            )
+        ).first()
+
+        if existing_appointment:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Ya existe otra cita programada para {appointment_data.appointment_date} a las {appointment_data.appointment_time}"
+            )
+
+    # 1. Actualizar campos simples EXCLUYENDO relaciones
+    update_data = appointment_data.model_dump(
+        exclude_unset=True,
+        exclude={'recipes', 'diagnoses'}
+    )
+
+    for field, value in update_data.items():
+        setattr(db_appointment, field, value)
+
+    # 2. Manejar diagnósticos por separado
+    if appointment_data.diagnoses is not None:
+        # Eliminar diagnósticos existentes
+        db.query(AppointmentDiagnosis).filter(
+            AppointmentDiagnosis.appointment_id == appointment_id
+        ).delete()
+
+        # Crear nuevos diagnósticos
+        for diagnosis_update in appointment_data.diagnoses:
+            diagnosis_data = diagnosis_update.model_dump(exclude_unset=True)
+            diagnosis_data['appointment_id'] = appointment_id
+            new_diagnosis = AppointmentDiagnosis(**diagnosis_data)
+            db.add(new_diagnosis)
+
+    # 3. Manejar recipes por separado
+    if appointment_data.recipes is not None:
+        # Eliminar recetas existentes
+        db.query(Recipe).filter(Recipe.appointment_id == appointment_id).delete()
+
+        # Crear nuevas recetas
+        for recipe_update in appointment_data.recipes:
+            recipe_data = recipe_update.model_dump(exclude_unset=True, exclude={'id'})
+            recipe_data['appointment_id'] = appointment_id
+            new_recipe = Recipe(**recipe_data)
+            db.add(new_recipe)
+
+    db_appointment.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(db_appointment)
+
+    return db_appointment

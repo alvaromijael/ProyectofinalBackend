@@ -113,6 +113,24 @@ class AppointmentUpdate(BaseModel):
     recipes: Optional[List[RecipeUpdate]] = Field(None, description="Lista de recetas médicas")
 
 
+
+class AppointmentManage(BaseModel):
+    patient_id: int = Field(description="ID del paciente")
+    appointment_date: Optional[date] = Field(None, description="Fecha de la cita")
+    appointment_time: Optional[time] = Field(None, description="Hora de la cita")
+    current_illness: Optional[str] = Field(None, description="Enfermedad actual")
+    physical_examination: Optional[str] = Field(None, description="Examen físico")
+    observations: Optional[str] = Field(None, description="Observaciones y tratamiento")
+    laboratory_tests: Optional[str] = Field(None, description="Exámenes solicitados")
+    temperature: Optional[str] = Field(None, description="Temperatura corporal")
+    blood_pressure: Optional[str] = Field(None, description="Presión arterial")
+    heart_rate: Optional[str] = Field(None, description="Frecuencia cardíaca")
+    oxygen_saturation: Optional[str] = Field(None, description="Saturación de oxígeno")
+    weight: Optional[str] = Field(None, description="Peso")
+    height: Optional[str] = Field(None, description="Talla")
+    diagnoses: List[DiagnosisUpdate] = Field(description="Lista de diagnósticos")
+    recipes: Optional[List[RecipeUpdate]] = Field(None, description="Lista de recetas médicas")
+
 class PatientBasic(BaseModel):
     id: int
     first_name: str
