@@ -49,19 +49,55 @@ def get_users(
 
 
 def update_user(db: Session, user_id: int, user_data):
+    # Buscar el usuario
     user = db.query(AuthUser).filter(AuthUser.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Actualizar campos (asumiendo que user_data es un Pydantic model)
-    for field, value in user_data.model_dump().items():
+    # Convertir los datos del Pydantic model
+    update_data = user_data.model_dump(exclude_unset=True)
+
+    # Manejar el rol especialmente
+    if 'role' in update_data:
+        role_name = update_data.pop('role')  # Quitar role del dict
+        role = db.query(Role).filter(Role.name == role_name).first()
+        if not role:
+            raise HTTPException(status_code=400, detail=f"Rol '{role_name}' no encontrado")
+        user.role_id = role.id
+
+    # Manejar birth_date si viene (convertir string a date)
+    if 'birth_date' in update_data and update_data['birth_date']:
+        try:
+            birth_date_str = update_data.pop('birth_date')
+            user.birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Formato de fecha inválido. Usa YYYY-MM-DD.")
+    elif 'birth_date' in update_data and not update_data['birth_date']:
+        update_data.pop('birth_date')  # Quitar si es None o vacío
+
+    # Actualizar resto de campos normales (first_name, last_name, email, is_active)
+    for field, value in update_data.items():
         if hasattr(user, field):
             setattr(user, field, value)
 
-    db.commit()
-    db.refresh(user)
+    try:
+        db.commit()
+        db.refresh(user)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Error al actualizar usuario")
 
-    return {"message": "User updated successfully"}
+    return {
+        "message": "Usuario actualizado correctamente",
+        "data": {
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "role": user.role.name if user.role else None,
+            "is_active": user.is_active
+        }
+    }
 
 def change_user_password(db: Session, user_id: int, data: PasswordChange):
     user = db.query(AuthUser).filter(AuthUser.id == user_id).first()
