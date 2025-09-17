@@ -19,11 +19,16 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+from typing import Optional
+
 class UserUpdate(BaseModel):
     first_name: str
     last_name: str
     email: str
-    birth_date: str
+    role: str
+    is_active: bool
+    birth_date: Optional[str] = None
+
 class PasswordChange(BaseModel):
     current_password: str
     new_password: str

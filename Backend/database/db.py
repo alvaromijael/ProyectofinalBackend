@@ -2,7 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-data="postgresql+psycopg2://postgres:sa@localhost:5432/femixweb3"
+
+data="postgresql+psycopg2://admin:admin123@44.211.190.95:5432/fenixweb"
 DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(data, echo=True)
 try:
