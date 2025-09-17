@@ -4,6 +4,7 @@ import os
 
 
 data="postgresql+psycopg2://admin:admin123@44.211.190.95:5432/fenixweb"
+data2='postgresql+psycopg2://admin:admin123@localhost:5432/fenixweb'
 DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(data, echo=True)
 try:

@@ -6,12 +6,12 @@ from database.db import SessionLocal, get_db
 
 def verify_token(token: str):
     try:
-        return jwt.decode(token, 'secret123', algorithms=["HS256"])
         print("decode ok")
+        return jwt.decode(token, 'secret123', algorithms=["HS256"])
+
     except jwt.ExpiredSignatureError:
         print("Token expirado")
         return None
-        print("Token inválido")
     except jwt.InvalidTokenError:
         return None
 
