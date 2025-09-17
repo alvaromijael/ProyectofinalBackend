@@ -13,7 +13,6 @@ class Patient(Base):
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
     birth_date = Column(Date, nullable=True)
-    age = Column(String(10), nullable=True)
     gender = Column(String(20), nullable=False)
     document_id = Column(String(20), nullable=False, unique=True, index=True)
     marital_status = Column(String(50), nullable=True)

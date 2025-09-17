@@ -25,7 +25,6 @@ class PatientBase(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     birth_date: Optional[datetime.date] = None
-    age: Optional[str] = None
     gender: Optional[str] = None
     document_id: Optional[str] = None
     marital_status: Optional[str] = None
@@ -47,7 +46,6 @@ class PatientUpdate(PatientBase):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     birth_date: Optional[datetime.date] = None
-    age: Optional[str] = None
     gender: Optional[str] = None
     document_id: Optional[str] = None
     marital_status: Optional[str] = None
