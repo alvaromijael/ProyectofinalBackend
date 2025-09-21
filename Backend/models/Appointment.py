@@ -31,8 +31,11 @@ class Appointment(Base):
     blood_pressure = Column(String(20), nullable=True)
     heart_rate = Column(String(10), nullable=True)
     oxygen_saturation = Column(String(10), nullable=True)
-    weight = Column(String(10), nullable=True)
+    weight = Column(Numeric(precision=6, scale=2), nullable=True)  # Valor numérico del peso
+    weight_unit = Column(String(5), nullable=True, default="kg")   # Unidad: kg, lb, g
     height = Column(String(10), nullable=True)
+
+    medical_preinscription = Column(Text, nullable=True)
 
     # Timestamps
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)

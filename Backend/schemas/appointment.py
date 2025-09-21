@@ -1,12 +1,14 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List
 from datetime import date, time, datetime
+from decimal import Decimal
 
 
 class RecipeBase(BaseModel):
     medicine: str = Field(..., description="Nombre del medicamento")
     amount: str = Field(..., description="Cantidad/dosis del medicamento")
     instructions: str = Field(..., description="Instrucciones de uso")
+    lunchTime: str = Field(None, description="Horario de Almuerzo")
     observations: Optional[str] = Field(None, description="Observaciones adicionales")
 
 
@@ -18,6 +20,7 @@ class RecipeUpdate(BaseModel):
     medicine: Optional[str] = Field(None, description="Nombre del medicamento")
     amount: Optional[str] = Field(None, description="Cantidad/dosis del medicamento")
     instructions: Optional[str] = Field(None, description="Instrucciones de uso")
+    lunchTime: str = Field(None, description="Horario de Almuerzo")
     observations: Optional[str] = Field(None, description="Observaciones adicionales")
 
 
@@ -27,6 +30,7 @@ class RecipeResponse(BaseModel):
     medicine: str
     amount: str
     instructions: str
+    lunchTime: Optional[str] = None
     observations: Optional[str] = None
 
     class Config:
@@ -61,17 +65,14 @@ class DiagnosisResponse(BaseModel):
         from_attributes = True
 
 
-# Esquemas existentes actualizados
 class VitalSigns(BaseModel):
     temperature: Optional[str] = Field(None, description="Temperatura corporal en °C")
     blood_pressure: Optional[str] = Field(None, description="Presión arterial (ej: 120/80)")
     heart_rate: Optional[str] = Field(None, description="Frecuencia cardíaca en lpm")
     oxygen_saturation: Optional[str] = Field(None, description="Saturación de oxígeno en %")
-    weight: Optional[str] = Field(None, description="Peso en kg")
+    weight: Optional[Decimal] = Field(None, description="Peso (valor numérico)")
+    weight_unit: Optional[str] = Field("kg", description="Unidad de peso (kg, lb, g)")
     height: Optional[str] = Field(None, description="Talla en cm")
-
-
-# Removido DiagnosisInfo ya que ahora usamos DiagnosisResponse
 
 
 class AppointmentBase(BaseModel):
@@ -86,8 +87,10 @@ class AppointmentBase(BaseModel):
     blood_pressure: Optional[str] = Field(None, description="Presión arterial")
     heart_rate: Optional[str] = Field(None, description="Frecuencia cardíaca")
     oxygen_saturation: Optional[str] = Field(None, description="Saturación de oxígeno")
-    weight: Optional[str] = Field(None, description="Peso")
+    weight: Optional[Decimal] = Field(None, description="Peso (valor numérico)")
+    weight_unit: Optional[str] = Field("kg", description="Unidad de peso (kg, lb, g)")
     height: Optional[str] = Field(None, description="Talla")
+    medical_preinscription: Optional[str] = Field(None, description="Prescripción Médica")
 
 
 class AppointmentCreate(AppointmentBase):
@@ -107,29 +110,43 @@ class AppointmentUpdate(BaseModel):
     blood_pressure: Optional[str] = Field(None, description="Presión arterial")
     heart_rate: Optional[str] = Field(None, description="Frecuencia cardíaca")
     oxygen_saturation: Optional[str] = Field(None, description="Saturación de oxígeno")
-    weight: Optional[str] = Field(None, description="Peso")
+    weight: Optional[Decimal] = Field(None, description="Peso (valor numérico)")
+    weight_unit: Optional[str] = Field(None, description="Unidad de peso (kg, lb, g)")
     height: Optional[str] = Field(None, description="Talla")
+    medical_preinscription: Optional[str] = Field(None, description="Prescripción Médica")
     diagnoses: Optional[List[DiagnosisUpdate]] = Field(None, description="Lista de diagnósticos")
     recipes: Optional[List[RecipeUpdate]] = Field(None, description="Lista de recetas médicas")
 
 
-
+# 🔧 ESQUEMA CORREGIDO: AppointmentManage
 class AppointmentManage(BaseModel):
-    patient_id: int = Field(description="ID del paciente")
-    appointment_date: Optional[date] = Field(None, description="Fecha de la cita")
-    appointment_time: Optional[time] = Field(None, description="Hora de la cita")
+    # Campos opcionales para flexibilidad en la gestión médica
     current_illness: Optional[str] = Field(None, description="Enfermedad actual")
     physical_examination: Optional[str] = Field(None, description="Examen físico")
     observations: Optional[str] = Field(None, description="Observaciones y tratamiento")
     laboratory_tests: Optional[str] = Field(None, description="Exámenes solicitados")
+
+    # Signos vitales (opcionales)
     temperature: Optional[str] = Field(None, description="Temperatura corporal")
     blood_pressure: Optional[str] = Field(None, description="Presión arterial")
     heart_rate: Optional[str] = Field(None, description="Frecuencia cardíaca")
     oxygen_saturation: Optional[str] = Field(None, description="Saturación de oxígeno")
-    weight: Optional[str] = Field(None, description="Peso")
+    weight: Optional[Decimal] = Field(None, description="Peso (valor numérico)")
+    weight_unit: Optional[str] = Field("kg", description="Unidad de peso (kg, lb, g)")
     height: Optional[str] = Field(None, description="Talla")
-    diagnoses: List[DiagnosisUpdate] = Field(description="Lista de diagnósticos")
-    recipes: Optional[List[RecipeUpdate]] = Field(None, description="Lista de recetas médicas")
+
+    # 🎯 CAMPO PRINCIPAL: Prescripción médica
+    medical_preinscription: Optional[str] = Field(None, description="Prescripción Médica")
+
+    # Diagnósticos y recetas (opcionales para flexibilidad)
+    diagnoses: Optional[List[DiagnosisUpdate]] = Field(default_factory=list, description="Lista de diagnósticos")
+    recipes: Optional[List[RecipeUpdate]] = Field(default_factory=list, description="Lista de recetas médicas")
+
+    class Config:
+        # Configuración para mejor validación
+        validate_assignment = True
+        str_strip_whitespace = True
+
 
 class PatientBasic(BaseModel):
     id: int
@@ -155,8 +172,10 @@ class AppointmentResponse(BaseModel):
     blood_pressure: Optional[str] = None
     heart_rate: Optional[str] = None
     oxygen_saturation: Optional[str] = None
-    weight: Optional[str] = None
+    weight: Optional[Decimal] = None
+    weight_unit: Optional[str] = "kg"
     height: Optional[str] = None
+    medical_preinscription: Optional[str] = Field(None, description="Prescripción Médica")
     created_at: datetime
     updated_at: Optional[datetime] = None
     patient: Optional[PatientBasic] = None
@@ -179,5 +198,6 @@ class AppointmentWithPatientDetails(AppointmentResponse):
             heart_rate=values.get('heart_rate'),
             oxygen_saturation=values.get('oxygen_saturation'),
             weight=values.get('weight'),
+            weight_unit=values.get('weight_unit', 'kg'),
             height=values.get('height')
         )

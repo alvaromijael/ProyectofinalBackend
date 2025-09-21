@@ -1,5 +1,4 @@
-import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database.db import Base
 
@@ -13,5 +12,6 @@ class Recipe(Base):
     medicine = Column(String(100), nullable=False)
     amount = Column(String(100), nullable=False)
     instructions = Column(String(500), nullable=False)
+    lunchTime = Column(String(500), nullable=True)
     observations = Column(String(500), nullable=True)
     appointment = relationship("Appointment", back_populates="recipes")

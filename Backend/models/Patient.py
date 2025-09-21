@@ -21,12 +21,12 @@ class Patient(Base):
     origin = Column(String(100), nullable=True)
     province = Column(String(100), nullable=True)
     city = Column(String(100), nullable=True)
-    medical_history = Column(Text, nullable=False)
+    medical_history = Column(Text, nullable=True)
     notes = Column(Text, nullable=True)
     neighborhood = Column(String(100), nullable=True)
     street = Column(String(200), nullable=True)
     house_number = Column(String(20), nullable=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, onupdate=datetime.datetime.utcnow)
 
     # Relation to contacts

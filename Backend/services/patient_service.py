@@ -10,10 +10,7 @@ import logging
 # Ajusta estas importaciones según tu estructura
 from models.Patient import Patient
 from models.Contact import Contact
-from schemas.patient import PatientCreate, PatientUpdate, PatientResponse, ContactResponse
-
-
-
+from schemas.patient import PatientCreate, PatientUpdate, PatientResponse, ContactResponse, PatientManage
 
 logger = logging.getLogger(__name__)
 
@@ -279,9 +276,10 @@ def update_patient(db: Session, patient_id: int, patient_update: PatientUpdate) 
             detail="Error inesperado al actualizar el paciente"
         )
 
-# PATCH mejorado también
-def patch_patient(db: Session, patient_id: int, patient_patch: dict) -> PatientResponse:
-    """Actualización parcial de un paciente"""
+
+
+def manage_patient(db: Session, patient_id: int, patient_update: PatientManage) -> PatientResponse:
+    """Actualizar un paciente"""
     try:
         db_patient = db.query(Patient).filter(Patient.id == patient_id).first()
         if db_patient is None:
@@ -290,25 +288,55 @@ def patch_patient(db: Session, patient_id: int, patient_patch: dict) -> PatientR
                 detail=f"Paciente con ID {patient_id} no encontrado"
             )
 
-        # Si se está actualizando el document_id, verificar que no exista en otro registro
-        if 'document_id' in patient_patch:
-            existing_patient = db.query(Patient).filter(
-                and_(
-                    Patient.document_id == patient_patch['document_id'],
-                    Patient.id != patient_id  # EXCLUIR el registro actual
-                )
-            ).first()
+        if not patient_update.medical_history:
+            raise HTTPException(
+                status_code=400,
+                detail="El campo de antecedentes médicos es obligatorio"
+            )
 
-            if existing_patient:
-                raise HTTPException(
-                    status_code=409,
-                    detail="Ya existe otro paciente con este número de documento"
-                )
+        # DEBUG: Ver qué datos están llegando
+        update_data = patient_update.model_dump(exclude_unset=True, exclude={"contacts"})
+        print(f"🔍 Datos a actualizar: {update_data}")
+        print(f"🔍 Document ID actual: {db_patient.document_id}")
+        print(f"🔍 Document ID nuevo: {update_data.get('document_id', 'NO ENVIADO')}")
 
-        # Actualizar solo los campos proporcionados
-        for field, value in patient_patch.items():
-            if hasattr(db_patient, field) and field != 'contacts':
+        # VALIDACIÓN PREVIA: Solo verificar document_id si realmente está cambiando
+        if 'document_id' in update_data:
+            if update_data['document_id'] != db_patient.document_id:
+                print(f"🔍 Document ID está cambiando, validando duplicados...")
+                existing_patient = db.query(Patient).filter(
+                    Patient.document_id == update_data['document_id']
+                ).first()
+
+                if existing_patient:
+                    print(f"❌ Documento duplicado encontrado con ID: {existing_patient.id}")
+                    raise HTTPException(
+                        status_code=409,
+                        detail="Ya existe otro paciente con este número de documento"
+                    )
+            else:
+                print(f"✅ Document ID no ha cambiado, no validar duplicados")
+
+        # Actualizar campos del paciente (SOLO si hay cambios reales)
+        changes_made = []
+        for field, value in update_data.items():
+            current_value = getattr(db_patient, field)
+            if current_value != value:  # Solo actualizar si hay cambio real
                 setattr(db_patient, field, value)
+                changes_made.append(f"{field}: {current_value} -> {value}")
+
+        print(f"🔍 Cambios realizados: {changes_made}")
+
+        # Actualizar contactos si se proporcionan
+        if hasattr(patient_update, 'contacts') and patient_update.contacts is not None:
+            print(f"🔍 Actualizando contactos...")
+            # Eliminar contactos existentes
+            db.query(Contact).filter(Contact.patient_id == patient_id).delete()
+
+            # Crear nuevos contactos
+            for contact_data in patient_update.contacts:
+                db_contact = Contact(**contact_data.model_dump(), patient_id=patient_id)
+                db.add(db_contact)
 
         db.commit()
         db.refresh(db_patient)
@@ -341,7 +369,6 @@ def patch_patient(db: Session, patient_id: int, patient_patch: dict) -> PatientR
         )
 
 
-# También puedes mejorar tu función utilitaria existente
 def check_document_exists(db: Session, document_id: str, exclude_patient_id: Optional[int] = None) -> bool:
     """Verificar si un documento ya existe"""
     try:
@@ -354,7 +381,6 @@ def check_document_exists(db: Session, document_id: str, exclude_patient_id: Opt
         return False
 
 
-# DELETE - Soft delete
 def delete_patient(db: Session, patient_id: int) -> dict:
     """Eliminar un paciente (soft delete - marcar como eliminado)"""
     try:
@@ -385,59 +411,3 @@ def delete_patient(db: Session, patient_id: int) -> dict:
             detail="Error inesperado al eliminar el paciente"
         )
 
-
-# UTILITY FUNCTIONS
-def get_patients_count(db: Session) -> int:
-    """Obtener el número total de pacientes"""
-    try:
-        return db.query(Patient).count()
-    except Exception as e:
-        logger.error(f"Error al contar pacientes: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail="Error al obtener el conteo de pacientes"
-        )
-
-
-
-
-
-def get_patients_by_city(db: Session, city: str, skip: int = 0, limit: int = 100) -> List[PatientResponse]:
-    """Obtener pacientes por ciudad"""
-    try:
-        patients = db.query(Patient).filter(
-            Patient.city.ilike(f"%{city}%")
-        ).offset(skip).limit(limit).all()
-
-        return [PatientResponse.model_validate(patient, from_attributes=True) for patient in patients]
-    except Exception as e:
-        logger.error(f"Error al obtener pacientes por ciudad: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail="Error al obtener pacientes por ciudad"
-        )
-
-
-def get_patients_by_age_range(
-        db: Session,
-        min_age: int,
-        max_age: int,
-        skip: int = 0,
-        limit: int = 100
-) -> List[PatientResponse]:
-    """Obtener pacientes por rango de edad"""
-    try:
-        patients = db.query(Patient).filter(
-            and_(
-                Patient.age.cast(db.Integer) >= min_age,
-                Patient.age.cast(db.Integer) <= max_age
-            )
-        ).offset(skip).limit(limit).all()
-
-        return [PatientResponse.model_validate(patient, from_attributes=True) for patient in patients]
-    except Exception as e:
-        logger.error(f"Error al obtener pacientes por rango de edad: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail="Error al obtener pacientes por rango de edad"
-        )

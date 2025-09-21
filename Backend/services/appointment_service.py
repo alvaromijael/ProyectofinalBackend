@@ -331,6 +331,7 @@ def manage_appointment(
         appointment_id: int,
         appointment_data: AppointmentManage
 ) -> Optional[Appointment]:
+    print(appointment_data)
     """Actualizar una cita existente"""
     db_appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
     if not db_appointment:

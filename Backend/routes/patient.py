@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from database.db import get_db
-from schemas.patient import PatientCreate, PatientUpdate, PatientResponse
+from schemas.patient import PatientCreate, PatientUpdate, PatientResponse, PatientManage
 from services import patient_service
 from typing import List
 
@@ -40,11 +40,19 @@ def update_patient(patient_id: int, patient: PatientUpdate, db: Session = Depend
         raise HTTPException(status_code=404, detail="Patient not found")
     return db_patient
 
-@router.delete("/{patient_id}", response_model=PatientResponse)
-def delete_patient(patient_id: int, db: Session = Depends(get_db)):
-    db_patient = patient_service.delete_patient(db, patient_id)
+
+@router.put("/manage/{patient_id}", response_model=PatientResponse)
+def update_patient(patient_id: int, patient: PatientManage, db: Session = Depends(get_db)):
+    db_patient = patient_service.manage_patient(db, patient_id, patient)
     if not db_patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     return db_patient
+
+@router.delete("/{patient_id}", status_code=204)
+def delete_patient(patient_id: int, db: Session = Depends(get_db)):
+    deleted_patient = patient_service.delete_patient(db, patient_id)
+    if not deleted_patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    return None  # No devuelve contenido
 
 
