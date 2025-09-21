@@ -51,7 +51,7 @@ def get_user_route(request: Request, user_id: int):
     return get_user(user_id)
 
 @router.delete("/{user_id}")
-def delete_user_route(request: Request, user_id: int):
+def delete_user_route(request: Request, user_id: int, db: Session = Depends(get_db)):
     if not hasattr(request.state, "user"):
         raise HTTPException(status_code=401, detail="Unauthorized")
-    return delete_user(user_id)
+    return delete_user(db,user_id)

@@ -109,7 +109,7 @@ def login(email: str, password: str, db: Session):
 
     # Prepara el payload del JWT
     #secret_key = os.getenv('JWT_SECRET_KEY')
-    secret_key = "secret"
+    secret_key = "secret123"
     payload = {
         "email": user_exist.email,
         "last_name": user_exist.last_name,
