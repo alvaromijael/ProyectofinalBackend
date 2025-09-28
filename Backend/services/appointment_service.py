@@ -108,6 +108,10 @@ def get_appointment_by_id(db: Session, appointment_id: int) -> Optional[Appointm
             .filter(Appointment.id == appointment_id).first())
 
 
+
+
+
+
 def search_appointments(
         db: Session,
         query: Optional[str] = None,
@@ -396,3 +400,51 @@ def manage_appointment(
     db.refresh(db_appointment)
 
     return db_appointment
+
+
+def get_appointments_by_user(
+        db: Session,
+        user_id: int,
+        query: Optional[str] = None,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
+        skip: int = 0,
+        limit: int = 100,
+        include_patient: bool = True,
+        include_recipes: bool = True,
+        include_diagnoses: bool = True
+) -> List[Appointment]:
+    db_query = db.query(Appointment).filter(Appointment.user_id == user_id)
+
+    if include_patient:
+        db_query = db_query.options(joinedload(Appointment.patient))
+    if include_recipes:
+        db_query = db_query.options(joinedload(Appointment.recipes))
+    if include_diagnoses:
+        db_query = db_query.options(joinedload(Appointment.diagnoses))
+
+    conditions = []
+
+    if query and query.strip():
+        search_term = f"%{query.lower()}%"
+        db_query = db_query.join(Patient).outerjoin(AppointmentDiagnosis)
+        text_conditions = or_(
+            func.lower(Patient.first_name).like(search_term),
+            func.lower(Patient.last_name).like(search_term),
+            Patient.document_id.contains(query.strip()),
+            func.lower(AppointmentDiagnosis.diagnosis_description).like(search_term),
+            AppointmentDiagnosis.diagnosis_code.contains(query.strip().upper())
+        )
+        conditions.append(text_conditions)
+
+    if start_date:
+        conditions.append(Appointment.appointment_date >= start_date)
+    if end_date:
+        conditions.append(Appointment.appointment_date <= end_date)
+
+    if conditions:
+        db_query = db_query.filter(and_(*conditions))
+
+    return (db_query
+            .order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time))
+            .offset(skip).limit(limit).all())

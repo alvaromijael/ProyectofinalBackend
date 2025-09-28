@@ -9,8 +9,8 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/")
 def get_users_route(request: Request,db: Session = Depends(get_db), role: str = None, first_name: str = None,  start_birth_date: str = None, end_birth_date: str = None):
-    if not hasattr(request.state, "user"):
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    #if not hasattr(request.state, "user"):
+    #    raise HTTPException(status_code=401, detail="Unauthorized")
     return get_users(db=db,role=role, first_name=first_name, start_birth_date=start_birth_date, end_birth_date=end_birth_date)
 
 @router.get("/roles")

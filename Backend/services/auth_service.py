@@ -111,6 +111,7 @@ def login(email: str, password: str, db: Session):
     #secret_key = os.getenv('JWT_SECRET_KEY')
     secret_key = "secret123"
     payload = {
+        "id": user_exist.id,
         "email": user_exist.email,
         "last_name": user_exist.last_name,
         "first_name": user_exist.first_name,
@@ -122,6 +123,7 @@ def login(email: str, password: str, db: Session):
     return {
         'message': 'Logged in successfully',
         'user': {
+            "id": user_exist.id,
             "email": user_exist.email,
             "first_name": user_exist.first_name,
             "last_name": user_exist.last_name,

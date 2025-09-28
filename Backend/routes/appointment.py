@@ -13,7 +13,7 @@ from services.appointment_service import (
     manage_appointment,
     delete_appointment,
     get_today_appointments,
-    get_appointment_count_by_patient,
+    get_appointment_count_by_patient, get_appointments_by_user,
 )
 from schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentResponse, AppointmentManage
 from database.db import get_db
@@ -180,4 +180,47 @@ def delete_appointment_route(
             detail="Error interno al eliminar la cita"
         )
 
+
+@router.get("/user/{user_id}", response_model=List[AppointmentResponse])
+def get_user_appointments(
+        user_id: int,
+        db: Session = Depends(get_db),
+        query: Optional[str] = Query(None,
+                                     description="Buscar por nombre, apellido, cédula del paciente o diagnóstico"),
+        start_date: Optional[date] = Query(None, description="Fecha de inicio (YYYY-MM-DD)"),
+        end_date: Optional[date] = Query(None, description="Fecha de fin (YYYY-MM-DD)"),
+        skip: int = Query(0, ge=0, description="Número de registros a omitir"),
+        limit: int = Query(100, ge=1, le=500, description="Número máximo de registros a retornar"),
+        include_patient: bool = Query(True, description="Incluir información del paciente"),
+        include_recipes: bool = Query(True, description="Incluir recetas médicas"),
+        include_diagnoses: bool = Query(True, description="Incluir diagnósticos")
+):
+    """
+    Obtener todas las citas de un médico específico con filtros opcionales.
+
+    Filtros disponibles:
+    - query: Búsqueda por texto en nombre, apellido, cédula del paciente o diagnóstico
+    - start_date: Filtrar citas desde esta fecha
+    - end_date: Filtrar citas hasta esta fecha
+    - Paginación con skip y limit
+    """
+    try:
+        appointments = get_appointments_by_user(
+            db=db,
+            user_id=user_id,
+            query=query,
+            start_date=start_date,
+            end_date=end_date,
+            skip=skip,
+            limit=limit,
+            include_patient=include_patient,
+            include_recipes=include_recipes,
+            include_diagnoses=include_diagnoses
+        )
+        return appointments
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al obtener las citas del médico: {str(e)}"
+        )
 

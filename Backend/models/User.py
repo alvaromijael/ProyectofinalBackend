@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, String, Date, UniqueConstraint, Boolean,
 from sqlalchemy.orm import relationship
 
 from database.db import Base
+from models.Appointment import Appointment
 
 
 class User(BaseModel):
@@ -53,6 +54,8 @@ class AuthUser(Base):
 
     # Relaciones
     role = relationship("Role", back_populates="users")
+    appointments = relationship("Appointment", back_populates="user")
+
 
     def __repr__(self):
         return f"<AuthUser(id={self.id}, email='{self.email}')>"
@@ -83,5 +86,6 @@ class RolePermission(Base):
     editar = Column(Boolean, nullable=False, default=False)
     eliminar = Column(Boolean, nullable=False, default=False)
 
-    # Relaciones
     role = relationship("Role", back_populates="permissions")
+
+
