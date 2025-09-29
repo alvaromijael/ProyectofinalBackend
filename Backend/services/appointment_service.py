@@ -409,7 +409,7 @@ def get_appointments_by_user(
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
         skip: int = 0,
-        limit: int = 100,
+        limit: int = 1000,
         include_patient: bool = True,
         include_recipes: bool = True,
         include_diagnoses: bool = True

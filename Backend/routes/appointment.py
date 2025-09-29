@@ -190,7 +190,7 @@ def get_user_appointments(
         start_date: Optional[date] = Query(None, description="Fecha de inicio (YYYY-MM-DD)"),
         end_date: Optional[date] = Query(None, description="Fecha de fin (YYYY-MM-DD)"),
         skip: int = Query(0, ge=0, description="Número de registros a omitir"),
-        limit: int = Query(100, ge=1, le=500, description="Número máximo de registros a retornar"),
+        limit: int = Query(100, ge=1, le=1000, description="Número máximo de registros a retornar"),
         include_patient: bool = Query(True, description="Incluir información del paciente"),
         include_recipes: bool = Query(True, description="Incluir recetas médicas"),
         include_diagnoses: bool = Query(True, description="Incluir diagnósticos")
