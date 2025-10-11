@@ -15,7 +15,9 @@ origins = [
     "http://127.0.0.1:5173",
     "https://fenixweb.j8hx8gh0jmcw8.us-east-1.cs.amazonlightsail.com",
     "http://44.211.190.95:5173",
-    "https://44.211.190.95:5173"
+    "https://44.211.190.95:5173",
+    "http://13.220.204.70:5173",
+    "https://13.220.204.70:5173"
 ]
 
 app.add_middleware(

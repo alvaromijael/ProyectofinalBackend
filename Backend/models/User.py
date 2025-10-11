@@ -6,6 +6,10 @@ from sqlalchemy.orm import relationship
 
 from database.db import Base
 from models.Appointment import Appointment
+from passlib.context import CryptContext
+
+# Agregar esta línea al inicio del archivo (después de los imports)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class User(BaseModel):
@@ -56,6 +60,11 @@ class AuthUser(Base):
     role = relationship("Role", back_populates="users")
     appointments = relationship("Appointment", back_populates="user")
 
+    def set_password(self, password: str):
+        self.password = pwd_context.hash(password)
+
+    def verify_password(self, password: str) -> bool:
+        return pwd_context.verify(password, self.password)
 
     def __repr__(self):
         return f"<AuthUser(id={self.id}, email='{self.email}')>"

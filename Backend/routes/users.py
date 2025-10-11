@@ -40,7 +40,7 @@ def change_password_route(
     if not hasattr(request.state, "user"):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    user_id = request.state.user.id
+    user_id = request.state.user['id']
     return change_user_password(db=db, user_id=user_id, data=data)
 
 
