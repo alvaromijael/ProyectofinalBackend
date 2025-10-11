@@ -4,6 +4,7 @@ from models.Patient import Patient
 from models.Contact import Contact
 from models.Appointment import Appointment
 from models.Recipe import  Recipe
+from models.Appointment import  AppointmentDiagnosis
 
 
 Base.metadata.create_all(bind=engine)

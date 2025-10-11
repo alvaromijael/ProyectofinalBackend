@@ -8,7 +8,7 @@ class RecipeBase(BaseModel):
     medicine: str = Field(..., description="Nombre del medicamento")
     amount: str = Field(..., description="Cantidad/dosis del medicamento")
     instructions: str = Field(..., description="Instrucciones de uso")
-    lunch_time: Optional[str] = Field(None, description="Horario de Almuerzo")
+    lunchTime: Optional[str] = Field(None, description="Horario de Almuerzo")
     observations: Optional[str] = Field(None, description="Observaciones adicionales")
 
 
@@ -20,7 +20,7 @@ class RecipeUpdate(BaseModel):
     medicine: Optional[str] = Field(None, description="Nombre del medicamento")
     amount: Optional[str] = Field(None, description="Cantidad/dosis del medicamento")
     instructions: Optional[str] = Field(None, description="Instrucciones de uso")
-    lunch_time: Optional[str] = Field(None, description="Horario de Almuerzo")
+    lunchTime: Optional[str] = Field(None, description="Horario de Almuerzo")
     observations: Optional[str] = Field(None, description="Observaciones adicionales")
 
 
@@ -30,7 +30,7 @@ class RecipeResponse(BaseModel):
     medicine: str
     amount: str
     instructions: str
-    lunch_time: Optional[str] = None
+    lunchTime: Optional[str] = None
     observations: Optional[str] = None
 
     model_config = {"from_attributes": True}
@@ -50,6 +50,7 @@ class DiagnosisUpdate(BaseModel):
     diagnosis_code: Optional[str] = Field(None, description="Código CIE-10")
     diagnosis_description: Optional[str] = Field(None, description="Descripción del diagnóstico")
     diagnosis_type: Optional[str] = Field(None, description="Tipo de diagnóstico (primary/secondary)")
+    diagnosis_observations: Optional[str] = Field(None, description="Observaciones Generales")
 
 
 class DiagnosisResponse(BaseModel):
@@ -58,6 +59,7 @@ class DiagnosisResponse(BaseModel):
     diagnosis_code: str
     diagnosis_description: str
     diagnosis_type: Optional[str] = None
+    diagnosis_observations: Optional[str] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}

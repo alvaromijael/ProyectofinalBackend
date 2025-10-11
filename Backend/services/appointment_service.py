@@ -3,7 +3,7 @@ from sqlalchemy import and_, or_, func, desc, asc
 from models.Appointment import Appointment, AppointmentDiagnosis
 from models.Patient import Patient
 from models.Recipe import Recipe
-from schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentManage
+from schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentManage, AppointmentResponse
 from typing import List, Optional
 from datetime import date, datetime
 from fastapi import HTTPException, status
@@ -97,7 +97,7 @@ def get_appointments(
         limit).all()
 
 
-def get_appointment_by_id(db: Session, appointment_id: int) -> Optional[Appointment]:
+def get_appointment_by_id(db: Session, appointment_id: int) -> Optional[AppointmentResponse]:
     """Obtener cita por ID"""
     return (db.query(Appointment)
             .options(
@@ -106,9 +106,6 @@ def get_appointment_by_id(db: Session, appointment_id: int) -> Optional[Appointm
         joinedload(Appointment.diagnoses)
     )
             .filter(Appointment.id == appointment_id).first())
-
-
-
 
 
 
@@ -402,6 +399,9 @@ def manage_appointment(
     return db_appointment
 
 
+import logging
+
+
 def get_appointments_by_user(
         db: Session,
         user_id: int,
@@ -414,37 +414,128 @@ def get_appointments_by_user(
         include_recipes: bool = True,
         include_diagnoses: bool = True
 ) -> List[Appointment]:
-    db_query = db.query(Appointment).filter(Appointment.user_id == user_id)
+    print("=== INICIO get_appointments_by_user ===")
+    print(f"Parámetros recibidos:")
+    print(f"  user_id: {user_id} (type: {type(user_id)})")
+    print(f"  query: '{query}' (type: {type(query)})")
+    print(f"  start_date: {start_date} (type: {type(start_date)})")
+    print(f"  end_date: {end_date} (type: {type(end_date)})")
+    print(f"  skip: {skip} (type: {type(skip)})")
+    print(f"  limit: {limit} (type: {type(limit)})")
+    print(f"  include_patient: {include_patient} (type: {type(include_patient)})")
+    print(f"  include_recipes: {include_recipes} (type: {type(include_recipes)})")
+    print(f"  include_diagnoses: {include_diagnoses} (type: {type(include_diagnoses)})")
 
-    if include_patient:
-        db_query = db_query.options(joinedload(Appointment.patient))
-    if include_recipes:
-        db_query = db_query.options(joinedload(Appointment.recipes))
-    if include_diagnoses:
-        db_query = db_query.options(joinedload(Appointment.diagnoses))
+    try:
+        print("\n--- Paso 1: Creando query base ---")
+        db_query = (db.query(Appointment)
+                    .filter(Appointment.user_id == user_id)
+                    .join(Patient)
+                    .outerjoin(AppointmentDiagnosis))
+        print("✓ Query base creada exitosamente")
 
-    conditions = []
+        print("\n--- Paso 2: Aplicando eager loading ---")
+        if include_patient:
+            print("  Aplicando joinedload para patient...")
+            db_query = db_query.options(joinedload(Appointment.patient))
+            print("  ✓ joinedload patient aplicado")
 
-    if query and query.strip():
-        search_term = f"%{query.lower()}%"
-        db_query = db_query.join(Patient).outerjoin(AppointmentDiagnosis)
-        text_conditions = or_(
-            func.lower(Patient.first_name).like(search_term),
-            func.lower(Patient.last_name).like(search_term),
-            Patient.document_id.contains(query.strip()),
-            func.lower(AppointmentDiagnosis.diagnosis_description).like(search_term),
-            AppointmentDiagnosis.diagnosis_code.contains(query.strip().upper())
-        )
-        conditions.append(text_conditions)
+        if include_recipes:
+            print("  Aplicando joinedload para recipes...")
+            db_query = db_query.options(joinedload(Appointment.recipes))
+            print("  ✓ joinedload recipes aplicado")
 
-    if start_date:
-        conditions.append(Appointment.appointment_date >= start_date)
-    if end_date:
-        conditions.append(Appointment.appointment_date <= end_date)
+        if include_diagnoses:
+            print("  Aplicando joinedload para diagnoses...")
+            db_query = db_query.options(joinedload(Appointment.diagnoses))
+            print("  ✓ joinedload diagnoses aplicado")
 
-    if conditions:
-        db_query = db_query.filter(and_(*conditions))
+        print("\n--- Paso 3: Preparando condiciones ---")
+        conditions = []
 
-    return (db_query
-            .order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time))
-            .offset(skip).limit(limit).all())
+        if query and query.strip():
+            print(f"  Procesando búsqueda: '{query.strip()}'")
+            search_term = f"%{query.lower()}%"
+            print(f"  Search term: '{search_term}'")
+
+            print("  ⚠️ ADVERTENCIA: Haciendo JOIN adicional (posible conflicto)")
+            db_query = db_query.join(Patient).outerjoin(AppointmentDiagnosis)
+
+            text_conditions = or_(
+                func.lower(Patient.first_name).like(search_term),
+                func.lower(Patient.last_name).like(search_term),
+                Patient.document_id.contains(query.strip()),
+                func.lower(AppointmentDiagnosis.diagnosis_description).like(search_term),
+                AppointmentDiagnosis.diagnosis_code.contains(query.strip().upper())
+            )
+            conditions.append(text_conditions)
+            print("  ✓ Condiciones de búsqueda agregadas")
+        else:
+            print("  No hay query de búsqueda")
+
+        if start_date:
+            print(f"  Agregando filtro start_date: {start_date}")
+            conditions.append(Appointment.appointment_date >= start_date)
+
+        if end_date:
+            print(f"  Agregando filtro end_date: {end_date}")
+            conditions.append(Appointment.appointment_date <= end_date)
+
+        print(f"  Total condiciones: {len(conditions)}")
+
+        print("\n--- Paso 4: Aplicando filtros ---")
+        if conditions:
+            print("  Aplicando filtros AND...")
+            db_query = db_query.filter(and_(*conditions))
+            print("  ✓ Filtros aplicados")
+        else:
+            print("  No hay condiciones que aplicar")
+
+        print("\n--- Paso 5: Aplicando ordenamiento y paginación ---")
+        print(f"  Order by: appointment_date DESC, appointment_time DESC")
+        print(f"  Offset: {skip}, Limit: {limit}")
+
+        final_query = (db_query
+                       .order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time))
+                       .offset(skip).limit(limit))
+
+        print("  ✓ Ordenamiento y paginación aplicados")
+
+        print("\n--- Paso 6: Ejecutando query ---")
+        print("  Ejecutando query...")
+
+        # Mostrar la query SQL generada
+        try:
+            query_str = str(final_query.statement.compile(compile_kwargs={"literal_binds": True}))
+            print(f"  SQL Query: {query_str}")
+        except Exception as e:
+            print(f"  No se pudo mostrar SQL: {e}")
+
+        result = final_query.all()
+        print(f"  ✓ Query ejecutada exitosamente")
+        print(f"  Resultados encontrados: {len(result)}")
+
+        if result:
+            if hasattr(result[0], 'patient') and result[0].patient:
+                print(f"  Primer paciente: {result[0].patient.first_name}")
+
+        print("=== FIN get_appointments_by_user (EXITOSO) ===")
+        return result
+
+    except Exception as e:
+        if hasattr(e, 'orig'):
+            print(f"  Error original: {e.orig}")
+        raise
+
+
+
+
+def get_appointment_patient(db: Session, appointment_id: int) -> Optional[AppointmentResponse]:
+    """Obtener cita por ID"""
+    return (db.query(Appointment)
+            .options(
+        joinedload(Appointment.patient),
+        joinedload(Appointment.recipes),
+        joinedload(Appointment.diagnoses)
+    )
+            .filter(Appointment.id == appointment_id).first())

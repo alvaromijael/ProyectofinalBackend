@@ -35,7 +35,7 @@ class Appointment(Base):
     patient = relationship("Patient", back_populates="appointments")
     recipes = relationship("Recipe", back_populates="appointment", cascade="all, delete-orphan")
     diagnoses = relationship("AppointmentDiagnosis", back_populates="appointment", cascade="all, delete-orphan")
-    user = relationship("AuthUser", back_populates="appointments")  # Ahora funciona
+    user = relationship("AuthUser", back_populates="appointments")
 
 
 class AppointmentDiagnosis(Base):
@@ -47,5 +47,6 @@ class AppointmentDiagnosis(Base):
     diagnosis_code = Column(String(10), nullable=False, index=True)
     diagnosis_description = Column(Text, nullable=False)
     diagnosis_type = Column(String(20), nullable=True, default="secondary")
+    diagnosis_observations = Column(Text, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     appointment = relationship("Appointment", back_populates="diagnoses")
