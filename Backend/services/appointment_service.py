@@ -399,143 +399,31 @@ def manage_appointment(
     return db_appointment
 
 
-import logging
 
 
-def get_appointments_by_user(
+def get_appointments_by_doctor(
         db: Session,
-        user_id: int,
-        query: Optional[str] = None,
-        start_date: Optional[date] = None,
-        end_date: Optional[date] = None,
+        doctor_id: int,
         skip: int = 0,
-        limit: int = 1000,
+        limit: int = 100,
         include_patient: bool = True,
         include_recipes: bool = True,
         include_diagnoses: bool = True
 ) -> List[Appointment]:
-    print("=== INICIO get_appointments_by_user ===")
-    print(f"Parámetros recibidos:")
-    print(f"  user_id: {user_id} (type: {type(user_id)})")
-    print(f"  query: '{query}' (type: {type(query)})")
-    print(f"  start_date: {start_date} (type: {type(start_date)})")
-    print(f"  end_date: {end_date} (type: {type(end_date)})")
-    print(f"  skip: {skip} (type: {type(skip)})")
-    print(f"  limit: {limit} (type: {type(limit)})")
-    print(f"  include_patient: {include_patient} (type: {type(include_patient)})")
-    print(f"  include_recipes: {include_recipes} (type: {type(include_recipes)})")
-    print(f"  include_diagnoses: {include_diagnoses} (type: {type(include_diagnoses)})")
+    """Obtener lista de citas de un doctor específico con paginación"""
+    print("Llegue")
+    query = db.query(Appointment).filter(Appointment.user_id == doctor_id)
 
-    try:
-        print("\n--- Paso 1: Creando query base ---")
-        db_query = (db.query(Appointment)
-                    .filter(Appointment.user_id == user_id)
-                    .join(Patient)
-                    .outerjoin(AppointmentDiagnosis))
-        print("✓ Query base creada exitosamente")
+    if include_patient:
+        query = query.options(joinedload(Appointment.patient))
 
-        print("\n--- Paso 2: Aplicando eager loading ---")
-        if include_patient:
-            print("  Aplicando joinedload para patient...")
-            db_query = db_query.options(joinedload(Appointment.patient))
-            print("  ✓ joinedload patient aplicado")
+    if include_recipes:
+        query = query.options(joinedload(Appointment.recipes))
 
-        if include_recipes:
-            print("  Aplicando joinedload para recipes...")
-            db_query = db_query.options(joinedload(Appointment.recipes))
-            print("  ✓ joinedload recipes aplicado")
+    if include_diagnoses:
+        query = query.options(joinedload(Appointment.diagnoses))
 
-        if include_diagnoses:
-            print("  Aplicando joinedload para diagnoses...")
-            db_query = db_query.options(joinedload(Appointment.diagnoses))
-            print("  ✓ joinedload diagnoses aplicado")
-
-        print("\n--- Paso 3: Preparando condiciones ---")
-        conditions = []
-
-        if query and query.strip():
-            print(f"  Procesando búsqueda: '{query.strip()}'")
-            search_term = f"%{query.lower()}%"
-            print(f"  Search term: '{search_term}'")
-
-            print("  ⚠️ ADVERTENCIA: Haciendo JOIN adicional (posible conflicto)")
-            db_query = db_query.join(Patient).outerjoin(AppointmentDiagnosis)
-
-            text_conditions = or_(
-                func.lower(Patient.first_name).like(search_term),
-                func.lower(Patient.last_name).like(search_term),
-                Patient.document_id.contains(query.strip()),
-                func.lower(AppointmentDiagnosis.diagnosis_description).like(search_term),
-                AppointmentDiagnosis.diagnosis_code.contains(query.strip().upper())
-            )
-            conditions.append(text_conditions)
-            print("  ✓ Condiciones de búsqueda agregadas")
-        else:
-            print("  No hay query de búsqueda")
-
-        if start_date:
-            print(f"  Agregando filtro start_date: {start_date}")
-            conditions.append(Appointment.appointment_date >= start_date)
-
-        if end_date:
-            print(f"  Agregando filtro end_date: {end_date}")
-            conditions.append(Appointment.appointment_date <= end_date)
-
-        print(f"  Total condiciones: {len(conditions)}")
-
-        print("\n--- Paso 4: Aplicando filtros ---")
-        if conditions:
-            print("  Aplicando filtros AND...")
-            db_query = db_query.filter(and_(*conditions))
-            print("  ✓ Filtros aplicados")
-        else:
-            print("  No hay condiciones que aplicar")
-
-        print("\n--- Paso 5: Aplicando ordenamiento y paginación ---")
-        print(f"  Order by: appointment_date DESC, appointment_time DESC")
-        print(f"  Offset: {skip}, Limit: {limit}")
-
-        final_query = (db_query
-                       .order_by(desc(Appointment.appointment_date), desc(Appointment.appointment_time))
-                       .offset(skip).limit(limit))
-
-        print("  ✓ Ordenamiento y paginación aplicados")
-
-        print("\n--- Paso 6: Ejecutando query ---")
-        print("  Ejecutando query...")
-
-        # Mostrar la query SQL generada
-        try:
-            query_str = str(final_query.statement.compile(compile_kwargs={"literal_binds": True}))
-            print(f"  SQL Query: {query_str}")
-        except Exception as e:
-            print(f"  No se pudo mostrar SQL: {e}")
-
-        result = final_query.all()
-        print(f"  ✓ Query ejecutada exitosamente")
-        print(f"  Resultados encontrados: {len(result)}")
-
-        if result:
-            if hasattr(result[0], 'patient') and result[0].patient:
-                print(f"  Primer paciente: {result[0].patient.first_name}")
-
-        print("=== FIN get_appointments_by_user (EXITOSO) ===")
-        return result
-
-    except Exception as e:
-        if hasattr(e, 'orig'):
-            print(f"  Error original: {e.orig}")
-        raise
-
-
-
-
-def get_appointment_patient(db: Session, appointment_id: int) -> Optional[AppointmentResponse]:
-    """Obtener cita por ID"""
-    return (db.query(Appointment)
-            .options(
-        joinedload(Appointment.patient),
-        joinedload(Appointment.recipes),
-        joinedload(Appointment.diagnoses)
-    )
-            .filter(Appointment.id == appointment_id).first())
+    return query.order_by(
+        desc(Appointment.appointment_date),
+        desc(Appointment.appointment_time)
+    ).offset(skip).limit(limit).all()

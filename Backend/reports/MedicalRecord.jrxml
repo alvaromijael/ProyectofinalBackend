@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MedicalRecord" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="869505da-65d1-483c-a5dc-4860cd9bf8c9">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Fenix Sercer"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="patient_id" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[11L]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:/Users/Boris/JaspersoftWorkspace/MyReports/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 
+	medical.appointments.id as appointment_id,
+	medical.appointments.appointment_date,
+	medical.appointments.appointment_time,
+	medical.appointments.current_illness,
+	medical.appointments.physical_examination,
+	medical.appointments.observations,
+	medical.appointments.laboratory_tests,
+	medical.appointments.temperature,
+	medical.appointments.blood_pressure,
+	medical.appointments.heart_rate,
+	medical.appointments.oxygen_saturation,
+	medical.appointments.weight,
+	medical.appointments.height,
+	medical.appointments.medical_preinscription,
+	medical.appointments.weight_unit,
+	medical.patients.first_name as patient_first_name,
+	medical.patients.last_name as patient_last_name,
+	medical.patients.birth_date,
+	medical.patients.document_id,
+	medical.patients.id as patient_id,
+	auth.auth_users.first_name as doctor_first_name,
+	auth.auth_users.last_name as doctor_last_name
+FROM medical.appointments
+LEFT JOIN auth.auth_users ON auth.auth_users.id = medical.appointments.user_id 
+LEFT JOIN medical.patients ON medical.patients.id = medical.appointments.patient_id
+WHERE medical.patients.id = $P{patient_id}
+ORDER BY medical.appointments.appointment_date DESC]]>
+	</queryString>
+	<field name="appointment_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="appointment_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="appointment_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="appointment_date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="appointment_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="appointment_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="appointment_time" class="java.sql.Time">
+		<property name="com.jaspersoft.studio.field.name" value="appointment_time"/>
+		<property name="com.jaspersoft.studio.field.label" value="appointment_time"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="current_illness" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="current_illness"/>
+		<property name="com.jaspersoft.studio.field.label" value="current_illness"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="physical_examination" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="physical_examination"/>
+		<property name="com.jaspersoft.studio.field.label" value="physical_examination"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="observations" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="observations"/>
+		<property name="com.jaspersoft.studio.field.label" value="observations"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="laboratory_tests" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="laboratory_tests"/>
+		<property name="com.jaspersoft.studio.field.label" value="laboratory_tests"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="temperature" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="temperature"/>
+		<property name="com.jaspersoft.studio.field.label" value="temperature"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="blood_pressure" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="blood_pressure"/>
+		<property name="com.jaspersoft.studio.field.label" value="blood_pressure"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="heart_rate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="heart_rate"/>
+		<property name="com.jaspersoft.studio.field.label" value="heart_rate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="oxygen_saturation" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="oxygen_saturation"/>
+		<property name="com.jaspersoft.studio.field.label" value="oxygen_saturation"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="weight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="weight"/>
+		<property name="com.jaspersoft.studio.field.label" value="weight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="height" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="height"/>
+		<property name="com.jaspersoft.studio.field.label" value="height"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="medical_preinscription" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="medical_preinscription"/>
+		<property name="com.jaspersoft.studio.field.label" value="medical_preinscription"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="weight_unit" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="weight_unit"/>
+		<property name="com.jaspersoft.studio.field.label" value="weight_unit"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="patient_first_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="patient_first_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="patient_first_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="patient_last_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="patient_last_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="patient_last_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="birth_date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="birth_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="birth_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="document_id" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="document_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="document_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="patient_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="patient_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="patient_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="doctor_first_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="doctor_first_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="doctor_first_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="auth_users"/>
+	</field>
+	<field name="doctor_last_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="doctor_last_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="doctor_last_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="auth_users"/>
+	</field>
+	<group name="grp_patient">
+		<groupExpression><![CDATA[$F{patient_id}]]></groupExpression>
+		<groupHeader>
+			<band height="150">
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="555" height="40" backcolor="#2C5F7C" uuid="0bfbb887-2fde-4f57-91f3-93d8afdd3f8b"/>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="18" isBold="true"/>
+					</textElement>
+					<text><![CDATA[HISTORIAL MÉDICO DEL PACIENTE]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Opaque" x="0" y="50" width="555" height="90" backcolor="#F5F5F5" uuid="738559dc-6fec-4786-ba14-7ce91b56f904"/>
+					<graphicElement>
+						<pen lineWidth="1.0" lineColor="#2C5F7C"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="10" y="60" width="80" height="25" uuid="40d2c70b-fe90-4a55-a09b-2569068081b7"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Paciente:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="90" y="60" width="240" height="25" uuid="3382adb4-ace2-4384-af58-fdd6f9f7b9c4"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="12" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{patient_first_name} != null ? $F{patient_first_name} : "") + " " + ($F{patient_last_name} != null ? $F{patient_last_name} : "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="350" y="60" width="60" height="20" uuid="60d447ab-8267-469f-b95a-4f3f9426c90d"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Cédula:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="410" y="60" width="135" height="20" uuid="1a2cd48f-00e9-4b75-8437-808f0bc7fad1"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{document_id} != null ? $F{document_id} : "N/A"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="10" y="95" width="120" height="20" uuid="f2cabd64-7973-4294-ab95-5302dd44ba19"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha de Nacimiento:]]></text>
+				</staticText>
+				<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement x="130" y="95" width="100" height="20" uuid="ffdebc4c-6684-4885-9b38-acdaa8c5b322"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{birth_date}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="145" width="555" height="1" uuid="2ca21222-a9ae-4346-adb5-22fd4258c989"/>
+					<graphicElement>
+						<pen lineWidth="2.0" lineColor="#2C5F7C"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="30">
+				<line>
+					<reportElement x="0" y="10" width="555" height="1" uuid="d9724912-a409-4269-8aef-313bcea4cf31"/>
+					<graphicElement>
+						<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#CCCCCC"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="500" splitType="Stretch">
+			<rectangle>
+				<reportElement mode="Opaque" x="0" y="10" width="555" height="30" backcolor="#E8F4F8" uuid="2bc2c205-293f-4cc4-81b1-7bd0c8002a77"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#2C5F7C"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="10" y="15" width="100" height="20" uuid="d9b31c47-0a57-4f5e-a4bc-71c9101e6570"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de Consulta:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="110" y="15" width="100" height="20" uuid="a05325bf-b9e3-4045-945b-001240e31ab4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{appointment_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="250" y="15" width="40" height="20" uuid="50c341a6-4ab3-4376-9b81-6be3f50d36e7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="290" y="15" width="80" height="20" uuid="a98c5c42-4eb6-41c8-9210-56bc195393bd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{appointment_time}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="400" y="15" width="50" height="20" uuid="1eb396cf-68bd-4bcd-9980-458e98dd522a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Médico:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="450" y="15" width="95" height="20" uuid="f62817dd-f618-4c72-8fdc-e246a8a424b2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{doctor_first_name} != null ? $F{doctor_first_name} : "") + " " + ($F{doctor_last_name} != null ? $F{doctor_last_name} : "")]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement mode="Opaque" x="0" y="50" width="555" height="70" backcolor="#FAFAFA" uuid="4138f732-b7e0-43db-9b00-864ed9dc86d0"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#DDDDDD"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="10" y="55" width="545" height="15" uuid="64d8d5b6-8467-48a9-8594-dbe86836b6bd"/>
+				<textElement>
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Signos Vitales]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="75" width="70" height="15" uuid="17475e48-5ece-4bb6-8fd6-b8a28b43636a"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Temperatura:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="80" y="75" width="60" height="15" uuid="ed4d07c1-d083-4760-848f-207668c4c789"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{temperature} != null ? $F{temperature} + " °C" : "N/A"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="150" y="75" width="80" height="15" uuid="6332cb59-3cc6-4930-8ea4-54a94932f8b1"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Presión Arterial:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="230" y="75" width="80" height="15" uuid="06015c4c-442a-4cea-b34e-c7d4d9c880d0"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blood_pressure} != null ? $F{blood_pressure} + " mmHg" : "N/A"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="320" y="75" width="80" height="15" uuid="f4b48aa6-4fae-499b-ba90-3242a64f682d"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Frec. Cardíaca:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="400" y="75" width="70" height="15" uuid="8975fdb1-6b23-4724-857a-1bc7214dbf7a"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{heart_rate} != null ? $F{heart_rate} + " lpm" : "N/A"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="95" width="70" height="15" uuid="be09ca62-9efc-45a7-8cf8-c57398b1fe26"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sat. Oxígeno:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="80" y="95" width="60" height="15" uuid="bcb40dbd-5887-4fd0-bbe5-a59d91287d6b"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{oxygen_saturation} != null ? $F{oxygen_saturation} + " %" : "N/A"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="150" y="95" width="40" height="15" uuid="c159d8c6-c5ee-417f-bd76-15049c1841ca"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Peso:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="190" y="95" width="80" height="15" uuid="a1936dba-d42c-454b-926f-5ddce6e68b6f"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{weight} != null ? $F{weight}.toString() + " " + ($F{weight_unit} != null ? $F{weight_unit} : "kg") : "N/A"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="280" y="95" width="40" height="15" uuid="8964c949-3815-4eb6-810b-758422e892a8"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Altura:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="320" y="95" width="75" height="15" uuid="1dcbeca8-e9c7-437a-9090-f55c94f8030b"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{height} != null ? $F{height} + " cm" : "N/A"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="130" width="555" height="20" uuid="c4afac71-ae4c-4c45-9720-e7649639c8d5"/>
+				<box leftPadding="5">
+					<bottomPen lineWidth="1.0" lineColor="#2C5F7C"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Enfermedad Actual]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="0" y="155" width="555" height="40" uuid="b03ad8c1-637a-4629-8f7e-ceaa076f6c41"/>
+				<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+					<pen lineWidth="0.5" lineColor="#DDDDDD"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{current_illness} != null && !$F{current_illness}.isEmpty() ? $F{current_illness} : "No registrado"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="205" width="555" height="20" uuid="8ec07445-773a-47db-9073-59e4c7983df1"/>
+				<box leftPadding="5">
+					<bottomPen lineWidth="1.0" lineColor="#2C5F7C"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Examen Físico]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="0" y="230" width="555" height="40" uuid="3759fb08-2283-4ba3-b361-06607d4df1fc"/>
+				<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+					<pen lineWidth="0.5" lineColor="#DDDDDD"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{physical_examination} != null && !$F{physical_examination}.isEmpty() ? $F{physical_examination} : "No registrado"]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="-20" y="280" width="555" height="100" uuid="ab700188-c01f-4f84-a7ba-2023695d3c9c"/>
+				<subreportParameter name="appointment_id">
+					<subreportParameterExpression><![CDATA[$F{appointment_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "MedicalRecord_Diagnosis.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="-20" y="390" width="555" height="100" uuid="1e0a5c03-edf6-427c-928e-030c28a8472f"/>
+				<subreportParameter name="appointment_id">
+					<subreportParameterExpression><![CDATA[$F{appointment_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "MedicalRecord_Recipe.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="30" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="5" width="555" height="1" uuid="3febfcee-25f7-40cb-af90-d746d4d00e52"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="455" y="10" width="100" height="15" uuid="46fd0dd7-7e43-47c7-b3c8-1e6f3e614180"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="0" y="10" width="150" height="15" uuid="0a0a2ac0-597e-4ab3-bf8c-a7be8d4d2a53"/>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Generado el: " + new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

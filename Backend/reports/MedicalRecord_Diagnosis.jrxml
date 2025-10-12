@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MedicalRecord_Diagnosis" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3f77014e-bb9f-4672-9d06-16b1ecd9e311">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="FenixWeb"/>
+	<property name="com.jaspersoft.studio.data.sql.tables">
+		<![CDATA[bWVkaWNhbC5hcHBvaW50bWVudF9kaWFnbm9zZXMgQVMgLDgxLDQwLDllZjU4YWY3LTMwYTYtNDRi
+NS1hMmRmLWNmNDU4MTA4MGViODs=]]>
+	</property>
+	<parameter name="appointment_id" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT appointment_id,
+	diagnosis_code,
+	diagnosis_description,
+	diagnosis_type,
+	id
+FROM medical.appointment_diagnoses
+WHERE appointment_id = $P{appointment_id}]]>
+	</queryString>
+	<field name="appointment_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="appointment_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="appointment_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointment_diagnoses"/>
+	</field>
+	<field name="diagnosis_code" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diagnosis_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="diagnosis_code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointment_diagnoses"/>
+	</field>
+	<field name="diagnosis_description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diagnosis_description"/>
+		<property name="com.jaspersoft.studio.field.label" value="diagnosis_description"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointment_diagnoses"/>
+	</field>
+	<field name="diagnosis_type" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diagnosis_type"/>
+		<property name="com.jaspersoft.studio.field.label" value="diagnosis_type"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointment_diagnoses"/>
+	</field>
+	<field name="id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="id"/>
+		<property name="com.jaspersoft.studio.field.label" value="id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointment_diagnoses"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="50" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="10" width="555" height="30" uuid="ddd259a3-86a6-41c6-91d0-802a16d3d898"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DIAGNÓSTICOS]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="80" height="30" backcolor="#E6E6E6" uuid="8e7bd202-8685-4a33-be35-cd2aab6a6515"/>
+				<box>
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Código]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="80" y="0" width="275" height="30" backcolor="#E6E6E6" uuid="c29635e0-35d2-402e-ac43-97d0d5d30081"/>
+				<box>
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descripción]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="355" y="0" width="200" height="30" backcolor="#E6E6E6" uuid="d4d5e0b4-48d3-4eab-a5f5-d9e2e87cfc7e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="80" height="30" uuid="6cb139de-8bf1-43e7-84e5-ff01ea526d1c"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{diagnosis_code}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="80" y="0" width="275" height="30" uuid="9b8411a3-7b34-4fe5-a7fa-c52701fcdd9c"/>
+				<box leftPadding="5" rightPadding="5">
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{diagnosis_description}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="355" y="0" width="200" height="30" uuid="de06bd2a-165b-4c77-af68-31649d5d9e30"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{diagnosis_type}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

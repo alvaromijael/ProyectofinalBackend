@@ -152,3 +152,32 @@ def get_roles(db: Session):
         raise HTTPException(status_code=404, detail="Role not found")
 
     return [{"id": role.id, "name": role.name} for role in roles]
+
+
+def get_by_role_services(
+        db: Session,
+        role_id: Optional[int] = None,
+):
+    query = db.query(AuthUser).join(Role)
+    print(f"Role ID recibido: {role_id}")
+
+    if role_id:
+        query = query.filter(Role.id == role_id)
+
+    users = query.all()
+
+    results = []
+    for user in users:
+        user_dict = {
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "birth_date": user.birth_date.isoformat() if user.birth_date else None,
+            "role": user.role.name if user.role else None,
+            "created_at": user.created_at.isoformat(),
+            "is_active": user.is_active
+        }
+        results.append(user_dict)
+
+    return {"message": "Ok", "data": results}
