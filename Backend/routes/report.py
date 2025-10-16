@@ -57,7 +57,8 @@ def verify_database_connection(patient_id: int):
 
 @router.get("/medical-history/{patient_id}")
 def get_medical_history_report(patient_id: int):
-
+    import os
+    print(os.environ.get("JAVA_HOME"))
     if not verify_database_connection(patient_id):
         logger.error(f"❌ Paciente {patient_id} no encontrado o no tiene citas")
         raise HTTPException(
@@ -91,7 +92,12 @@ def get_medical_history_report(patient_id: int):
             'jdbc_url': 'jdbc:postgresql://13.220.204.70:5432/fenixweb'
         }
 
-        parameters = {'patient_id': patient_id, 'SUBREPORT_DIR': "C:\\Users\\Boris\\JaspersoftWorkspace\\MyReports\\"}
+        """parameters = {'patient_id': patient_id, 'SUBREPORT_DIR': "C:\\03-JavaScript\\proyecto 4gen\\Backend\\reports\\"}"""
+
+        parameters = {
+            'patient_id': patient_id,
+            'SUBREPORT_DIR': os.path.abspath("reports") + os.sep
+        }
 
         pyreportjasper.config(
             input_file=input_file,
