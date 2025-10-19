@@ -7,6 +7,8 @@ import logging
 import psycopg2
 import base64
 import traceback
+from fastapi.responses import FileResponse
+
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -84,15 +86,17 @@ def get_medical_history_report(patient_id: int):
             'driver': 'postgres',
             'username': 'admin',
             'password': 'admin123',
-            'host': '13.220.204.70',
-            'database': 'fenixweb',
+            'host': 'localhost',
+            'database': 'fenixweb3',
             'port': '5432',
             'jdbc_driver': 'org.postgresql.Driver',
-            'jdbc_url': 'jdbc:postgresql://13.220.204.70:5432/fenixweb'
+            'jdbc_url': 'jdbc:postgresql://localhost:5432/fenixweb3'
         }
 
-        parameters = {'patient_id': patient_id, 'SUBREPORT_DIR': "C:\\Users\\Boris\\JaspersoftWorkspace\\MyReports\\"}
-
+        parameters = {
+            'patient_id': patient_id,
+            'SUBREPORT_DIR': os.path.abspath("reports") + os.sep
+        }
         pyreportjasper.config(
             input_file=input_file,
             output_file=output_file,
@@ -136,3 +140,70 @@ def get_medical_history_report(patient_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+from fastapi.responses import FileResponse
+
+
+@router.get("/medical-certificate/{appointment_id}")
+def get_medical_history_report(appointment_id: int):
+    input_file = os.path.abspath("reports/medicalCertificate.jrxml")
+
+    if not os.path.exists(input_file):
+        logger.error(f"❌ Archivo no encontrado: {input_file}")
+        raise HTTPException(status_code=404, detail="Archivo de reporte no encontrado")
+
+    output_dir = os.path.abspath("reports/output")
+    os.makedirs(output_dir, exist_ok=True)
+
+    timestamp = int(datetime.now().timestamp())
+    output_file = os.path.join(output_dir, f"medical_certificate_{appointment_id}_{timestamp}")
+
+    try:
+        pyreportjasper = PyReportJasper()
+
+        db_config = {
+            'driver': 'postgres',
+            'username': 'postgres',
+            'password': 'sa',
+            'host': 'localhost',
+            'database': 'fenixweb3',
+            'port': '5432',
+            'jdbc_driver': 'org.postgresql.Driver',
+            'jdbc_url': 'jdbc:postgresql://localhost:5432/fenixweb3'
+        }
+
+        parameters = {
+            'APPOINTMENT_ID': appointment_id,
+        }
+
+        pyreportjasper.config(
+            input_file=input_file,
+            output_file=output_file,
+            output_formats=["pdf"],
+            parameters=parameters,
+            db_connection=db_config
+        )
+
+        pyreportjasper.process_report()
+
+        pdf_file = f"{output_file}.pdf"
+
+        if not os.path.exists(pdf_file):
+            logger.error(f"❌ PDF no generado: {pdf_file}")
+            raise HTTPException(status_code=500, detail="PDF no generado")
+
+        # Retornar el archivo directamente para descarga
+        filename = f"certificado_medico_{appointment_id}.pdf"
+
+        return FileResponse(
+            path=pdf_file,
+            media_type='application/pdf',
+            filename=filename,
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"❌ ERROR: {e}")
+        logger.error(f"Stack trace: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))

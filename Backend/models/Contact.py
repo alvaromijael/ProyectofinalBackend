@@ -15,6 +15,7 @@ class Contact(Base):
     phone = Column(String(20), nullable=False)
     email = Column(String(120), nullable=True)
     relationship_type = Column(String(50), nullable=False)
+    document_id = Column(String(20), nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     # Relation to patient

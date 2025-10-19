@@ -1,3 +1,4 @@
+from docutils.nodes import contact
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from middleware.auth import AuthMiddleware
@@ -7,6 +8,7 @@ from routes import users
 from routes import patient
 from routes import appointment
 from routes import report
+from routes import contact
 
 app = FastAPI()
 
@@ -34,6 +36,7 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(patient.router)
 app.include_router(appointment.router)
+app.include_router(contact.router)
 
 app.include_router(report.router)
 

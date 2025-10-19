@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_, func, desc, asc
 from models.Appointment import Appointment, AppointmentDiagnosis
+from models.Contact import Contact
 from models.Patient import Patient
 from models.Recipe import Recipe
 from schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentManage, AppointmentResponse
@@ -176,7 +177,40 @@ def update_appointment(
             detail=f"Cita con ID {appointment_id} no encontrada"
         )
 
-    # Si se está actualizando la fecha/hora, verificar disponibilidad
+    if appointment_data.rest_to is not None:
+        rest_from = appointment_data.rest_from or db_appointment.rest_from
+
+        if rest_from is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="rest_from es requerido cuando se especifica rest_to"
+            )
+
+        if appointment_data.rest_to < rest_from:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="rest_to debe ser posterior o igual a rest_from"
+            )
+
+    if appointment_data.rest_to is not None:
+        if appointment_data.rest_from is None:
+            if appointment_data.rest_to < appointment_data.appointment_date is None:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Fecha de descanso incorrecta"
+                )
+
+
+    if appointment_data.representative_id is not None:
+        db_representative_id = db.query(Contact).filter(Contact.id == appointment_data.representative_id).first()
+        if not db_representative_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Representante con ID {appointment_data.representative_id} no encontrado"
+            )
+
+
+
     if appointment_data.appointment_date and appointment_data.appointment_time:
         existing_appointment = db.query(Appointment).filter(
             and_(
@@ -411,7 +445,6 @@ def get_appointments_by_doctor(
         include_diagnoses: bool = True
 ) -> List[Appointment]:
     """Obtener lista de citas de un doctor específico con paginación"""
-    print("Llegue")
     query = db.query(Appointment).filter(Appointment.user_id == doctor_id)
 
     if include_patient:

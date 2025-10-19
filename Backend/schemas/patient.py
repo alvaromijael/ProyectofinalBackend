@@ -8,6 +8,7 @@ class ContactBase(BaseModel):
     last_name: str
     phone: str
     email: Optional[EmailStr] = None
+    document_id: Optional[str] = None
     relationship_type: str
 
 
@@ -42,6 +43,8 @@ class PatientBase(BaseModel):
     street: Optional[str] = None
     house_number: Optional[str] = None
     notes: Optional[str] = None
+    enterprise : Optional[str] = None
+    work_activity : Optional[str] = None
 
 
 class PatientCreate(BaseModel):
@@ -64,6 +67,8 @@ class PatientCreate(BaseModel):
     street: Optional[str] = None
     house_number: Optional[str] = None
     notes: Optional[str] = None
+    enterprise: Optional[str] = None
+    work_activity: Optional[str] = None
     contacts: List[ContactCreate] = Field(default_factory=list)
 
 
@@ -84,6 +89,8 @@ class PatientUpdate(BaseModel):
     house_number: Optional[str] = None
     medical_history: Optional[str] = None
     notes: Optional[str] = None
+    enterprise: Optional[str] = None
+    work_activity: Optional[str] = None
     contacts: Optional[List[ContactCreate]] = Field(default_factory=list)
 
 
@@ -92,6 +99,7 @@ class PatientResponse(PatientBase):
     created_at: Optional[datetime.datetime] = None
     updated_at: Optional[datetime.datetime] = None
     contacts: Optional[List[ContactResponse]] = Field(default_factory=list)
+    document_id: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -114,4 +122,6 @@ class PatientManage(BaseModel):
     street: Optional[str] = None
     house_number: Optional[str] = None
     notes: Optional[str] = None
+    enterprise: Optional[str] = None
+    work_activity: Optional[str] = None
     contacts: List[ContactCreate] = Field(default_factory=list)

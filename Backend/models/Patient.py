@@ -26,6 +26,8 @@ class Patient(Base):
     neighborhood = Column(String(100), nullable=True)
     street = Column(String(200), nullable=True)
     house_number = Column(String(20), nullable=True)
+    enterprise = Column(String(100), nullable=True)
+    work_activity = Column(String(100), nullable=True)
     created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, onupdate=datetime.datetime.utcnow)
 

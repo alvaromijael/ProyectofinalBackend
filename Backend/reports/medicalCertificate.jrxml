@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="medicalCertificate" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3d7c7bf2-4cda-4165-9024-1a831076294e">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="FenixWeb"/>
+	<property name="com.jaspersoft.studio.data.sql.tables">
+		<![CDATA[bWVkaWNhbC5jb250YWN0cyAsNjE5LDU0MCwwMmQ0MzMzOS1kNzUyLTQxZmEtYTMxOS0xMjQ0NTNl
+Y2Q4ZDc7bWVkaWNhbC5wYXRpZW50cyAsNDUwLDE1LGQwZTA5YWUzLWE1MzUtNDUwNS1iMzljLTQ2
+NGY4YWFjMDc4MDttZWRpY2FsLmFwcG9pbnRtZW50X2RpYWdub3NlcyAsMTUsNDE3LDU5ODdiOTdm
+LWJiMGEtNDdmMy04NGFiLWQ5ODdmNjZlOWRlMDttZWRpY2FsLmFwcG9pbnRtZW50cyAsMjM0LDEw
+Nyw4NThkNTdmNy00NWNjLTQ3NzYtOGRjMC05MmIxNjAyMzcyNWY7]]>
+	</property>
+	<parameter name="APPOINTMENT_ID" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[SELECT medical.patients.first_name AS patient_first_name,
+	medical.patients.last_name AS patient_last_name,
+	medical.patients.document_id AS patient_document_id,
+	medical.patients.birth_date AS patient_birth_date,
+	medical.patients.enterprise,
+	medical.patients.work_activity,
+	medical.patients.street,
+	medical.patients.neighborhood,
+	medical.patients.city,
+	medical.appointments.appointment_date,
+	medical.appointments.rest_from,
+	medical.appointments.rest_to,
+	medical.appointments.has_representative,
+	medical.appointments.representative_id,
+	medical.appointment_diagnoses.diagnosis_code,
+	medical.appointment_diagnoses.diagnosis_description,
+	medical.appointment_diagnoses.diagnosis_type,
+	medical.contacts.first_name AS contact_first_name,
+	medical.contacts.last_name AS contact_last_name,
+	medical.contacts.document_id AS contact_document_id,
+	medical.contacts.relationship_type,
+	medical.appointments.contingency_type,
+	medical.appointments.observations
+FROM medical.appointment_diagnoses
+	INNER JOIN medical.appointments ON 
+	 medical.appointment_diagnoses.appointment_id = medical.appointments.id 
+	INNER JOIN medical.patients ON 
+	 medical.appointments.patient_id = medical.patients.id 
+	LEFT JOIN medical.contacts ON 
+	 medical.appointments.representative_id = medical.contacts.id 
+WHERE 
+	 medical.appointments.id = $P{APPOINTMENT_ID} 
+	 AND medical.appointment_diagnoses.diagnosis_type = 'primary']]>
+	</queryString>
+	<field name="patient_first_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="patient_first_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="patient_first_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="patient_last_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="patient_last_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="patient_last_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="patient_document_id" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="patient_document_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="patient_document_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="patient_birth_date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="patient_birth_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="patient_birth_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="enterprise" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="enterprise"/>
+		<property name="com.jaspersoft.studio.field.label" value="enterprise"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="work_activity" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="work_activity"/>
+		<property name="com.jaspersoft.studio.field.label" value="work_activity"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="street" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="street"/>
+		<property name="com.jaspersoft.studio.field.label" value="street"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="neighborhood" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="neighborhood"/>
+		<property name="com.jaspersoft.studio.field.label" value="neighborhood"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="city" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="city"/>
+		<property name="com.jaspersoft.studio.field.label" value="city"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="patients"/>
+	</field>
+	<field name="appointment_date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="appointment_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="appointment_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="rest_from" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="rest_from"/>
+		<property name="com.jaspersoft.studio.field.label" value="rest_from"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="rest_to" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="rest_to"/>
+		<property name="com.jaspersoft.studio.field.label" value="rest_to"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="has_representative" class="java.lang.Boolean">
+		<property name="com.jaspersoft.studio.field.name" value="has_representative"/>
+		<property name="com.jaspersoft.studio.field.label" value="has_representative"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="representative_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="representative_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="representative_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="diagnosis_code" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diagnosis_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="diagnosis_code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointment_diagnoses"/>
+	</field>
+	<field name="diagnosis_description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diagnosis_description"/>
+		<property name="com.jaspersoft.studio.field.label" value="diagnosis_description"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointment_diagnoses"/>
+	</field>
+	<field name="diagnosis_type" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diagnosis_type"/>
+		<property name="com.jaspersoft.studio.field.label" value="diagnosis_type"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointment_diagnoses"/>
+	</field>
+	<field name="contact_first_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="contact_first_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="contact_first_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contacts"/>
+	</field>
+	<field name="contact_last_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="contact_last_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="contact_last_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contacts"/>
+	</field>
+	<field name="contact_document_id" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="contact_document_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="contact_document_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contacts"/>
+	</field>
+	<field name="relationship_type" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="relationship_type"/>
+		<property name="com.jaspersoft.studio.field.label" value="relationship_type"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contacts"/>
+	</field>
+	<field name="contingency_type" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="contingency_type"/>
+		<property name="com.jaspersoft.studio.field.label" value="contingency_type"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<field name="observations" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="observations"/>
+		<property name="com.jaspersoft.studio.field.label" value="observations"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="appointments"/>
+	</field>
+	<variable name="patient_age" class="java.lang.String">
+		<variableExpression><![CDATA[$F{patient_birth_date} != null ? 
+			String.valueOf(java.time.Period.between(
+				$F{patient_birth_date}.toLocalDate(), 
+				java.time.LocalDate.now()
+			).getYears()) + " años" : ""]]></variableExpression>
+	</variable>
+	<variable name="full_patient_name" class="java.lang.String">
+		<variableExpression><![CDATA[$F{patient_first_name} + " " + $F{patient_last_name}]]></variableExpression>
+	</variable>
+	<variable name="full_contact_name" class="java.lang.String">
+		<variableExpression><![CDATA[$F{contact_first_name} != null && $F{contact_last_name} != null ? 
+			$F{contact_first_name} + " " + $F{contact_last_name} : ""]]></variableExpression>
+	</variable>
+	<variable name="formatted_appointment_date" class="java.lang.String">
+		<variableExpression><![CDATA[new java.text.SimpleDateFormat("EEEE d 'de' MMMM 'del' yyyy", new java.util.Locale("es", "ES"))
+			.format($F{appointment_date})]]></variableExpression>
+	</variable>
+	<variable name="formatted_rest_from" class="java.lang.String">
+		<variableExpression><![CDATA[$F{rest_from} != null ? 
+			new java.text.SimpleDateFormat("dd/MM/yyyy", new java.util.Locale("es", "ES"))
+			.format($F{rest_from}) : ""]]></variableExpression>
+	</variable>
+	<variable name="formatted_rest_to" class="java.lang.String">
+		<variableExpression><![CDATA[$F{rest_to} != null ? 
+			new java.text.SimpleDateFormat("dd/MM/yyyy", new java.util.Locale("es", "ES"))
+			.format($F{rest_to}) : ""]]></variableExpression>
+	</variable>
+	<title>
+		<band height="100" splitType="Stretch">
+			<staticText>
+				<reportElement x="380" y="10" width="160" height="40" uuid="65e0f3d7-c005-44dd-8c65-87aa439da06f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="24" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Clínica FENIX]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="50" width="160" height="15" uuid="e8661e54-b566-4f44-9ca3-5016a157a1bd"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<text><![CDATA[DE SALUD BENÍTEZ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="75" width="100" height="20" uuid="48aaceaf-045b-4fa1-972b-6193dc05106e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<text><![CDATA[El Quinche, ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="110" y="75" width="430" height="20" uuid="b4c50342-3b60-45e8-8d83-433ca264d264"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{formatted_appointment_date}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="600" splitType="Stretch">
+			<staticText>
+				<reportElement x="150" y="10" width="255" height="25" uuid="99188b22-eedf-4b20-9519-fb29144b571a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CERTIFICADO MÉDICO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="50" width="100" height="20" uuid="a0959508-e8b8-4cfd-b808-e0474608dd6c"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<text><![CDATA[Certifico que:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="110" y="50" width="430" height="20" uuid="ac62127f-4bf9-4c0c-b98a-cc5bd8ced82f"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{full_patient_name}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="75" width="30" height="20" uuid="43b49ca8-2ae1-492b-a715-d3bd48db6232"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<text><![CDATA[de]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="40" y="75" width="80" height="20" uuid="257c9805-4ea2-49d8-842d-da078b32ab30"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{patient_age}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="120" y="75" width="50" height="20" uuid="f4890c93-7f40-4a1c-acac-38694d1a2cb5"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<text><![CDATA[con CI:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="170" y="75" width="100" height="20" uuid="0534e83c-5bf5-490f-b173-35afe2866cd5"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patient_document_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="270" y="75" width="150" height="20" uuid="89b5c590-230d-4e57-939e-2cc88e6cdcb1"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<text><![CDATA[y Número de historia clínica:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="100" width="535" height="20" uuid="cb97325b-0f4f-47da-8855-9c31bc84e9cd"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<text><![CDATA[es atendido en esta casa de salud el día ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="200" y="100" width="340" height="20" uuid="46a7a916-02ad-4683-ab0e-0148e855b36a"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{formatted_appointment_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="120" width="535" height="20" uuid="eff8aa42-4626-4c7e-ab0e-613c70d1e4b7"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<text><![CDATA[con el diagnóstico de:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="10" y="145" width="535" height="30" uuid="72755781-8187-47c5-a838-4f418602b973"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+					<paragraph leftIndent="5" rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{diagnosis_description} + " " + $F{diagnosis_code}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="185" width="100" height="20" uuid="e3a3d30c-095c-4fc9-a88d-174f92cc2709"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reposo médico:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="210" width="50" height="20" uuid="1d74785b-9cf1-4a7f-8408-6507cfa9083d"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desde]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="210" width="480" height="20" uuid="f152cbd7-2202-48a1-ae4c-ab06a81cc9bd"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["el " + $V{formatted_rest_from}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="235" width="50" height="20" uuid="0b3f8388-bf5e-4bcb-a351-743bc2976fd6"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="235" width="480" height="20" uuid="b7626add-d6eb-490c-8fa4-16a96d974e85"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["el " + $V{formatted_rest_to}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="265" width="120" height="20" uuid="9e93e02a-1aed-4cd7-9e8d-432cb8d1df1d"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Notas del médico:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="10" y="345" width="535" height="30" isRemoveLineWhenBlank="true" uuid="0c8209b2-01a7-4919-92e1-5b892df21f2e">
+					<printWhenExpression><![CDATA[$F{has_representative}]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Acude en compañía de " + $F{relationship_type} + " " + $V{full_contact_name} + " CI: " + $F{contact_document_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="385" width="70" height="20" uuid="335a04c3-70d4-428f-bbc9-12dec16e5f95"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dirección:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="410" width="70" height="20" uuid="78ea1444-78c5-4205-9ba3-701d7c27efb3"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Teléfono:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="435" width="70" height="20" uuid="73ba4fd7-e088-4255-9b18-2bd695fbdd47"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Empresa:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="435" width="460" height="20" uuid="d1fd7ec7-839a-4612-b5b0-92bd90926b68"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{enterprise} != null ? $F{enterprise} : "Ninguna"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="460" width="120" height="20" uuid="448d0b44-284c-481b-9035-3953ea19b967"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Actividad Laboral:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="460" width="410" height="20" uuid="d6acaa56-26cb-46f8-81ea-f6aec770ab7c"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{work_activity} != null ? $F{work_activity} : "Ninguno"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="485" width="140" height="20" uuid="7d17cad1-cf1f-470c-bfe9-e39abc0f5022"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de contingencia:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="150" y="485" width="390" height="20" uuid="396af219-7613-47be-98e6-d8a872a697b6"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{contingency_type}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="10" y="520" width="535" height="1" uuid="06d27885-fa1c-4775-842d-52dbfb7db76d"/>
+			</line>
+			<staticText>
+				<reportElement x="150" y="555" width="255" height="15" uuid="2a1e032f-ae2c-407c-99fd-14ad2a476367"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<text><![CDATA[CI 1724181265]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="150" y="570" width="255" height="15" uuid="03482ffe-8c36-4034-95dc-e135957c1ac8"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ESPECIALISTA EN PEDIATRÍA]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="420" y="75" width="100" height="20" uuid="8a7786eb-17cd-4821-973a-5a3dcc8e6f02"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patient_document_id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="280" width="520" height="60" uuid="f31f413e-a8ab-48ec-9c1e-de994da81bd7"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{observations}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="40" splitType="Stretch">
+			<staticText>
+				<reportElement x="450" y="5" width="90" height="12" uuid="0c00198b-bd79-4ab8-867d-c5b06ee1cb54"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[El Quinche.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="17" width="80" height="12" uuid="0c01edd9-1591-4e85-9fb7-c332c570a28e"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dir: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="460" y="17" width="80" height="12" uuid="a5cf4b24-d2d2-4ca0-8331-841977fa5abd"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Emsara Mas N1-77 y Quito]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="25" width="200" height="12" uuid="551a3dbc-d1b4-47c5-8cc4-9b0d959530c1"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial" size="8" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[dra.rosalespedia@outlook.es]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

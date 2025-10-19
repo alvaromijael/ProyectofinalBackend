@@ -110,6 +110,12 @@ class AppointmentBase(BaseModel):
     weight_unit: Optional[str] = Field("kg", description="Unidad de peso (kg, lb, g)")
     height: Optional[str] = Field(None, description="Talla")
     medical_preinscription: Optional[str] = Field(None, description="Prescripción Médica")  # Manteniendo el nombre original del modelo
+    sabbath_days: Optional[int] = Field(None, description="Dias de Reposo")
+    rest_from: Optional[date]  = Field(None, description="Fecha de inicio de reposo")
+    rest_to:  Optional[date]  = Field(None, description="Fecha de fianlizacion de reposo")
+    has_representative: Optional[bool] = Field(None, description="Indica si el paciente tiene un representante")
+    representative_id : Optional[int] = Field(None, description="Id del representante")
+    contingency_type:Optional[str] = Field(None, description="Tipo de vontigencia")
 
 
 class AppointmentCreate(AppointmentBase):
@@ -137,7 +143,12 @@ class AppointmentUpdate(BaseModel):
     medical_preinscription: Optional[str] = Field(None, description="Prescripción Médica")
     diagnoses: Optional[List[DiagnosisUpdate]] = Field(None, description="Lista de diagnósticos")
     recipes: Optional[List[RecipeUpdate]] = Field(None, description="Lista de recetas médicas")
-
+    sabbath_days: Optional[int] = Field(None, description="Dias de Reposo")
+    rest_from: Optional[date] = Field(None, description="Fecha de inicio de reposo")
+    rest_to: Optional[date] = Field(None, description="Fecha de fianlizacion de reposo")
+    has_representative: Optional[bool] = Field(None, description="Indica si el paciente tiene un representante")
+    representative_id : Optional[int] = Field(None, description="Id del representante")
+    contingency_type: Optional[str] = Field(None, description="Tipo de vontigencia")
 
 class AppointmentManage(BaseModel):
     current_illness: Optional[str] = Field(None, description="Enfermedad actual")
@@ -181,10 +192,15 @@ class AppointmentResponse(BaseModel):
     weight: Optional[Decimal] = None
     weight_unit: Optional[str] = "kg"
     height: Optional[str] = None
+    sabbath_days: Optional[int] = None
+    rest_from: Optional[date] = None
+    rest_to: Optional[date] = None
+    has_representative: Optional[bool] = None,
+    representative_id : Optional[int] = None,
     medical_preinscription: Optional[str] = Field(None, description="Prescripción Médica")  # Manteniendo nombre original
+    contingency_type: Optional[str] = Field(None, description="Tipo de vontigencia"),
     created_at: datetime
     updated_at: Optional[datetime] = None
-
     patient: Optional[PatientBasic] = None
     user: Optional[UserBasic] = None  # Relación con el médico
     diagnoses: Optional[List[DiagnosisResponse]] = Field(default_factory=list, description="Lista de diagnósticos")
