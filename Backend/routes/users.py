@@ -11,10 +11,10 @@ from database.db import SessionLocal, get_db
 router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/")
-def get_users_route(request: Request,db: Session = Depends(get_db), role: str = None, first_name: str = None,  start_birth_date: str = None, end_birth_date: str = None):
+def get_users_route(request: Request, db: Session = Depends(get_db), role: str = None, first_name: str = None, start_birth_date: str = None, end_birth_date: str = None):
     #if not hasattr(request.state, "user"):
     #    raise HTTPException(status_code=401, detail="Unauthorized")
-    return get_users(db=db,role=role, first_name=first_name, start_birth_date=start_birth_date, end_birth_date=end_birth_date)
+    return get_users(db=db, role=role, first_name=first_name, start_birth_date=start_birth_date, end_birth_date=end_birth_date)
 
 
 @router.get("/getByRole")
@@ -24,8 +24,9 @@ def get_users_by_role(
 ):
     print(f"Role ID recibido: {role_id}")
     return get_by_role_services(db=db, role_id=role_id)
+
 @router.get("/roles")
-def get_roles_route(request: Request,db: Session = Depends(get_db)):
+def get_roles_route(request: Request, db: Session = Depends(get_db)):
     if not hasattr(request.state, "user"):
         raise HTTPException(status_code=401, detail="Unauthorized")
     return get_roles(db)
@@ -56,13 +57,13 @@ def change_password_route(
 
 
 @router.get("/{user_id}")
-def get_user_route(request: Request, user_id: int):
+def get_user_route(request: Request, user_id: int, db: Session = Depends(get_db)):  # ← AGREGAR db: Session = Depends(get_db)
     if not hasattr(request.state, "user"):
         raise HTTPException(status_code=401, detail="Unauthorized")
-    return get_user(user_id)
+    return get_user(db, user_id)  # ← AGREGAR db como primer parámetro
 
 @router.delete("/{user_id}")
 def delete_user_route(request: Request, user_id: int, db: Session = Depends(get_db)):
     if not hasattr(request.state, "user"):
         raise HTTPException(status_code=401, detail="Unauthorized")
-    return delete_user(db,user_id)
+    return delete_user(db, user_id)
