@@ -17,6 +17,7 @@ class User(BaseModel):
     last_name: str
     email: str
     password: str
+    cedula: str  # ← AGREGAR ESTE CAMPO
     birth_date: str
 
 
@@ -30,6 +31,7 @@ class UserUpdate(BaseModel):
     first_name: str
     last_name: str
     email: str
+    cedula: Optional[str] = None  # ← AGREGAR ESTE CAMPO (opcional porque hay usuarios sin cédula)
     role: str
     is_active: bool
     birth_date: Optional[str] = None
@@ -43,6 +45,7 @@ class AuthUser(Base):
     __tablename__ = 'auth_users'
     __table_args__ = (
         UniqueConstraint('email', name='uq_user_email'),
+        UniqueConstraint('cedula', name='uq_user_cedula'),  # ← AGREGAR ESTA LÍNEA
         {'schema': 'auth'}
     )
 
@@ -50,6 +53,7 @@ class AuthUser(Base):
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     email = Column(String(120), nullable=False, unique=True)
+    cedula = Column(String(10), nullable=True, unique=True)  # ← AGREGAR ESTE CAMPO
     password = Column(String(128), nullable=False)
     birth_date = Column(Date, nullable=True)
     role_id = Column(Integer, ForeignKey('auth.roles.id'), nullable=False)  # FK a roles.id
@@ -67,7 +71,7 @@ class AuthUser(Base):
         return pwd_context.verify(password, self.password)
 
     def __repr__(self):
-        return f"<AuthUser(id={self.id}, email='{self.email}')>"
+        return f"<AuthUser(id={self.id}, email='{self.email}', cedula='{self.cedula}')>"
 
 class Role(Base):
     __tablename__ = 'roles'
@@ -96,5 +100,3 @@ class RolePermission(Base):
     eliminar = Column(Boolean, nullable=False, default=False)
 
     role = relationship("Role", back_populates="permissions")
-
-

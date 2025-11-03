@@ -1,4 +1,3 @@
-
 from bson import ObjectId
 from sqlalchemy.orm import Session
 from models.User import AuthUser, Role, PasswordChange
@@ -38,6 +37,7 @@ def get_users(
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email,
+            "cedula": user.cedula,  # ← AGREGAR ESTE CAMPO
             "birth_date": user.birth_date.isoformat() if user.birth_date else None,
             "role": user.role.name if user.role else None,
             "created_at": user.created_at.isoformat(),
@@ -57,6 +57,15 @@ def update_user(db: Session, user_id: int, user_data):
     # Convertir los datos del Pydantic model
     update_data = user_data.model_dump(exclude_unset=True)
 
+    # ← AGREGAR VALIDACIÓN DE CÉDULA ÚNICA
+    if 'cedula' in update_data:
+        existing_user = db.query(AuthUser).filter(
+            AuthUser.cedula == update_data['cedula'],
+            AuthUser.id != user_id  # Excluir el usuario actual
+        ).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="La cédula ya está registrada")
+
     # Manejar el rol especialmente
     if 'role' in update_data:
         role_name = update_data.pop('role')  # Quitar role del dict
@@ -75,7 +84,7 @@ def update_user(db: Session, user_id: int, user_data):
     elif 'birth_date' in update_data and not update_data['birth_date']:
         update_data.pop('birth_date')  # Quitar si es None o vacío
 
-    # Actualizar resto de campos normales (first_name, last_name, email, is_active)
+    # Actualizar resto de campos normales (first_name, last_name, email, cedula, is_active)
     for field, value in update_data.items():
         if hasattr(user, field):
             setattr(user, field, value)
@@ -94,6 +103,7 @@ def update_user(db: Session, user_id: int, user_data):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email,
+            "cedula": user.cedula,  # ← AGREGAR ESTE CAMPO
             "role": user.role.name if user.role else None,
             "is_active": user.is_active
         }
@@ -126,6 +136,7 @@ def get_user(db: Session, user_id: int):
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
+        "cedula": user.cedula,  # ← AGREGAR ESTE CAMPO
         "birth_date": user.birth_date.isoformat() if user.birth_date else None,
         "role": user.role.name if user.role else None,
         "created_at": user.created_at.isoformat(),
@@ -173,6 +184,7 @@ def get_by_role_services(
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email,
+            "cedula": user.cedula,  # ← AGREGAR ESTE CAMPO
             "birth_date": user.birth_date.isoformat() if user.birth_date else None,
             "role": user.role.name if user.role else None,
             "created_at": user.created_at.isoformat(),
