@@ -7,7 +7,6 @@ from sqlalchemy import or_, and_
 from typing import List, Optional
 import logging
 
-# Ajusta estas importaciones según tu estructura
 from models.Patient import Patient
 from models.Contact import Contact
 from schemas.patient import PatientCreate, PatientUpdate, PatientResponse, ContactResponse, PatientManage
@@ -192,6 +191,7 @@ def search_patients(
             detail="Error al buscar pacientes"
         )
 
+
 def update_patient(db: Session, patient_id: int, patient_update: PatientUpdate) -> PatientResponse:
     """Actualizar un paciente"""
     try:
@@ -235,16 +235,85 @@ def update_patient(db: Session, patient_id: int, patient_update: PatientUpdate) 
 
         print(f"🔍 Cambios realizados: {changes_made}")
 
-        # Actualizar contactos si se proporcionan
+        # ✅ ACTUALIZAR CONTACTOS PRESERVANDO REFERENCIAS
         if hasattr(patient_update, 'contacts') and patient_update.contacts is not None:
-            print(f"🔍 Actualizando contactos...")
-            # Eliminar contactos existentes
-            db.query(Contact).filter(Contact.patient_id == patient_id).delete()
+            print(f"\n{'=' * 60}")
+            print(f"🔍 INICIANDO ACTUALIZACIÓN DE CONTACTOS")
+            print(f"{'=' * 60}")
 
-            # Crear nuevos contactos
+            # Ver qué contactos vienen en el request
+            contacts_received = [c.model_dump() for c in patient_update.contacts]
+            print(f"🔍 Contactos recibidos del frontend:")
+            for c in contacts_received:
+                print(f"   - ID: {c.get('id')} | Nombre: {c.get('first_name')} {c.get('last_name')}")
+
+            # Obtener contactos existentes EN LA BASE DE DATOS
+            existing_contacts = db.query(Contact).filter(Contact.patient_id == patient_id).all()
+            existing_contacts_dict = {contact.id: contact for contact in existing_contacts}
+
+            print(f"\n🔍 Contactos existentes en BD para paciente {patient_id}:")
+            if existing_contacts_dict:
+                for contact_id, contact in existing_contacts_dict.items():
+                    print(f"   - ID: {contact_id} | Nombre: {contact.first_name} {contact.last_name}")
+            else:
+                print(f"   ❌ NO HAY CONTACTOS EN LA BD PARA ESTE PACIENTE")
+
+            # IDs que vienen en el update
+            incoming_ids = set()
+
+            print(f"\n{'=' * 60}")
+            print(f"🔍 PROCESANDO CADA CONTACTO")
+            print(f"{'=' * 60}")
+
             for contact_data in patient_update.contacts:
-                db_contact = Contact(**contact_data.model_dump(), patient_id=patient_id)
-                db.add(db_contact)
+                contact_dict = contact_data.model_dump()
+                contact_id = contact_dict.get('id')
+
+                print(f"\n📋 Contacto: {contact_dict.get('first_name')} {contact_dict.get('last_name')}")
+                print(f"   ID recibido: {contact_id}")
+                print(f"   ¿Existe en BD?: {contact_id in existing_contacts_dict if contact_id else False}")
+
+                if contact_id and contact_id in existing_contacts_dict:
+                    # ✅ ACTUALIZAR contacto existente
+                    incoming_ids.add(contact_id)
+                    db_contact = existing_contacts_dict[contact_id]
+
+                    print(f"   ✏️  ACTUALIZANDO contacto existente ID: {contact_id}")
+                    for field, value in contact_dict.items():
+                        if field != 'id':
+                            old_value = getattr(db_contact, field, None)
+                            if old_value != value:
+                                setattr(db_contact, field, value)
+                                print(f"      {field}: {old_value} → {value}")
+                else:
+                    # ➕ CREAR nuevo contacto
+                    print(f"   ➕ CREANDO NUEVO contacto")
+                    if contact_id:
+                        print(f"      ⚠️  Se envió ID {contact_id} pero NO existe en BD")
+
+                    new_contact = Contact(
+                        **{k: v for k, v in contact_dict.items() if k != 'id'},
+                        patient_id=patient_id
+                    )
+                    db.add(new_contact)
+
+            print(f"\n{'=' * 60}")
+            print(f"🔍 IDs que deben permanecer: {incoming_ids}")
+            print(f"🔍 IDs en BD actualmente: {set(existing_contacts_dict.keys())}")
+            print(f"{'=' * 60}")
+
+            # 🗑️ ELIMINAR contactos que ya no están en la lista
+            ids_to_delete = set(existing_contacts_dict.keys()) - incoming_ids
+            if ids_to_delete:
+                print(f"\n🗑️  ELIMINANDO contactos: {ids_to_delete}")
+                for contact_id in ids_to_delete:
+                    contact = existing_contacts_dict[contact_id]
+                    print(f"   Eliminando ID: {contact_id} | {contact.first_name} {contact.last_name}")
+                    db.delete(contact)
+            else:
+                print(f"\n✅ No hay contactos para eliminar")
+
+            print(f"\n{'=' * 60}\n")
 
         db.commit()
         db.refresh(db_patient)
@@ -275,7 +344,6 @@ def update_patient(db: Session, patient_id: int, patient_update: PatientUpdate) 
             status_code=500,
             detail="Error inesperado al actualizar el paciente"
         )
-
 
 
 def manage_patient(db: Session, patient_id: int, patient_update: PatientManage) -> PatientResponse:
@@ -327,16 +395,85 @@ def manage_patient(db: Session, patient_id: int, patient_update: PatientManage) 
 
         print(f"🔍 Cambios realizados: {changes_made}")
 
-        # Actualizar contactos si se proporcionan
+        # ✅ ACTUALIZAR CONTACTOS PRESERVANDO REFERENCIAS
         if hasattr(patient_update, 'contacts') and patient_update.contacts is not None:
-            print(f"🔍 Actualizando contactos...")
-            # Eliminar contactos existentes
-            db.query(Contact).filter(Contact.patient_id == patient_id).delete()
+            print(f"\n{'=' * 60}")
+            print(f"🔍 INICIANDO ACTUALIZACIÓN DE CONTACTOS")
+            print(f"{'=' * 60}")
 
-            # Crear nuevos contactos
+            # Ver qué contactos vienen en el request
+            contacts_received = [c.model_dump() for c in patient_update.contacts]
+            print(f"🔍 Contactos recibidos del frontend:")
+            for c in contacts_received:
+                print(f"   - ID: {c.get('id')} | Nombre: {c.get('first_name')} {c.get('last_name')}")
+
+            # Obtener contactos existentes EN LA BASE DE DATOS
+            existing_contacts = db.query(Contact).filter(Contact.patient_id == patient_id).all()
+            existing_contacts_dict = {contact.id: contact for contact in existing_contacts}
+
+            print(f"\n🔍 Contactos existentes en BD para paciente {patient_id}:")
+            if existing_contacts_dict:
+                for contact_id, contact in existing_contacts_dict.items():
+                    print(f"   - ID: {contact_id} | Nombre: {contact.first_name} {contact.last_name}")
+            else:
+                print(f"   ❌ NO HAY CONTACTOS EN LA BD PARA ESTE PACIENTE")
+
+            # IDs que vienen en el update
+            incoming_ids = set()
+
+            print(f"\n{'=' * 60}")
+            print(f"🔍 PROCESANDO CADA CONTACTO")
+            print(f"{'=' * 60}")
+
             for contact_data in patient_update.contacts:
-                db_contact = Contact(**contact_data.model_dump(), patient_id=patient_id)
-                db.add(db_contact)
+                contact_dict = contact_data.model_dump()
+                contact_id = contact_dict.get('id')
+
+                print(f"\n📋 Contacto: {contact_dict.get('first_name')} {contact_dict.get('last_name')}")
+                print(f"   ID recibido: {contact_id}")
+                print(f"   ¿Existe en BD?: {contact_id in existing_contacts_dict if contact_id else False}")
+
+                if contact_id and contact_id in existing_contacts_dict:
+                    # ✅ ACTUALIZAR contacto existente
+                    incoming_ids.add(contact_id)
+                    db_contact = existing_contacts_dict[contact_id]
+
+                    print(f"   ✏️  ACTUALIZANDO contacto existente ID: {contact_id}")
+                    for field, value in contact_dict.items():
+                        if field != 'id':
+                            old_value = getattr(db_contact, field, None)
+                            if old_value != value:
+                                setattr(db_contact, field, value)
+                                print(f"      {field}: {old_value} → {value}")
+                else:
+                    # ➕ CREAR nuevo contacto
+                    print(f"   ➕ CREANDO NUEVO contacto")
+                    if contact_id:
+                        print(f"      ⚠️  Se envió ID {contact_id} pero NO existe en BD")
+
+                    new_contact = Contact(
+                        **{k: v for k, v in contact_dict.items() if k != 'id'},
+                        patient_id=patient_id
+                    )
+                    db.add(new_contact)
+
+            print(f"\n{'=' * 60}")
+            print(f"🔍 IDs que deben permanecer: {incoming_ids}")
+            print(f"🔍 IDs en BD actualmente: {set(existing_contacts_dict.keys())}")
+            print(f"{'=' * 60}")
+
+            # 🗑️ ELIMINAR contactos que ya no están en la lista
+            ids_to_delete = set(existing_contacts_dict.keys()) - incoming_ids
+            if ids_to_delete:
+                print(f"\n🗑️  ELIMINANDO contactos: {ids_to_delete}")
+                for contact_id in ids_to_delete:
+                    contact = existing_contacts_dict[contact_id]
+                    print(f"   Eliminando ID: {contact_id} | {contact.first_name} {contact.last_name}")
+                    db.delete(contact)
+            else:
+                print(f"\n✅ No hay contactos para eliminar")
+
+            print(f"\n{'=' * 60}\n")
 
         db.commit()
         db.refresh(db_patient)
@@ -367,7 +504,6 @@ def manage_patient(db: Session, patient_id: int, patient_update: PatientManage) 
             status_code=500,
             detail="Error inesperado al actualizar el paciente"
         )
-
 
 def check_document_exists(db: Session, document_id: str, exclude_patient_id: Optional[int] = None) -> bool:
     """Verificar si un documento ya existe"""

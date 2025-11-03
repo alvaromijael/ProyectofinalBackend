@@ -8,7 +8,7 @@ class RecipeBase(BaseModel):
     medicine: str = Field(..., description="Nombre del medicamento")
     amount: str = Field(..., description="Cantidad/dosis del medicamento")
     instructions: str = Field(..., description="Instrucciones de uso")
-    lunchTime: Optional[str] = Field(None, description="Horario de Almuerzo")
+    lunchTime: Optional[List[str]] = Field(default_factory=list, description="Horarios de comida")
     observations: Optional[str] = Field(None, description="Observaciones adicionales")
 
 
@@ -20,7 +20,7 @@ class RecipeUpdate(BaseModel):
     medicine: Optional[str] = Field(None, description="Nombre del medicamento")
     amount: Optional[str] = Field(None, description="Cantidad/dosis del medicamento")
     instructions: Optional[str] = Field(None, description="Instrucciones de uso")
-    lunchTime: Optional[str] = Field(None, description="Horario de Almuerzo")
+    lunchTime: Optional[List[str]] = Field(None, description="Horarios de comida")
     observations: Optional[str] = Field(None, description="Observaciones adicionales")
 
 
@@ -30,9 +30,8 @@ class RecipeResponse(BaseModel):
     medicine: str
     amount: str
     instructions: str
-    lunchTime: Optional[str] = None
+    lunchTime: Optional[List[str]] = None
     observations: Optional[str] = None
-
     model_config = {"from_attributes": True}
 
 

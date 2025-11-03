@@ -3,6 +3,7 @@ from typing import List, Optional
 import datetime
 
 
+# ----------------- Contacto -----------------
 class ContactBase(BaseModel):
     first_name: str
     last_name: str
@@ -14,6 +15,11 @@ class ContactBase(BaseModel):
 
 class ContactCreate(ContactBase):
     pass
+
+
+class ContactUpdate(ContactBase):
+    """Schema para actualizar contactos - incluye ID opcional para preservar referencias"""
+    id: Optional[int] = None
 
 
 class ContactResponse(ContactBase):
@@ -43,8 +49,11 @@ class PatientBase(BaseModel):
     street: Optional[str] = None
     house_number: Optional[str] = None
     notes: Optional[str] = None
-    enterprise : Optional[str] = None
-    work_activity : Optional[str] = None
+    enterprise: Optional[str] = None
+    work_activity: Optional[str] = None
+    email: Optional[str] = None
+    telephone: Optional[str] = None
+    telephone2: Optional[str] = None
 
 
 class PatientCreate(BaseModel):
@@ -69,6 +78,9 @@ class PatientCreate(BaseModel):
     notes: Optional[str] = None
     enterprise: Optional[str] = None
     work_activity: Optional[str] = None
+    email: Optional[str] = None
+    telephone: Optional[str] = None
+    telephone2: Optional[str] = None
     contacts: List[ContactCreate] = Field(default_factory=list)
 
 
@@ -91,7 +103,10 @@ class PatientUpdate(BaseModel):
     notes: Optional[str] = None
     enterprise: Optional[str] = None
     work_activity: Optional[str] = None
-    contacts: Optional[List[ContactCreate]] = Field(default_factory=list)
+    email: Optional[str] = None
+    telephone: Optional[str] = None
+    telephone2: Optional[str] = None
+    contacts: Optional[List[ContactUpdate]] = None
 
 
 class PatientResponse(PatientBase):
@@ -124,4 +139,4 @@ class PatientManage(BaseModel):
     notes: Optional[str] = None
     enterprise: Optional[str] = None
     work_activity: Optional[str] = None
-    contacts: List[ContactCreate] = Field(default_factory=list)
+    contacts: List[ContactUpdate] = Field(default_factory=list)  # ← Cambio aquí

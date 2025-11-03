@@ -28,6 +28,9 @@ class Patient(Base):
     house_number = Column(String(20), nullable=True)
     enterprise = Column(String(100), nullable=True)
     work_activity = Column(String(100), nullable=True)
+    email = Column(String(100), nullable=True)
+    telephone = Column(String(20), nullable=True)
+    telephone2 = Column(String(20), nullable=True)
     created_at = Column(DateTime, nullable=True, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, onupdate=datetime.datetime.utcnow)
 
