@@ -1,65 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MedicalRecord_Recipe" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c985fe67-1803-459a-bce2-400d6ff80c19">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Fenix Sercer"/>
-	<property name="com.jaspersoft.studio.data.sql.tables">
-		<![CDATA[bWVkaWNhbC5yZWNpcGUgQVMgLDg4LDkyLGYzNDkzMTBhLTBhOWQtNGU4Mi05YTE5LTUyODhkNDZk
-NTlhZDs=]]>
-	</property>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MedicalRecord_Recipe" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f1e21641-a6e5-47b9-927f-9c4e16d92344">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="FenixWeb"/>
 	<parameter name="appointment_id" class="java.lang.Integer"/>
-	<queryString>
+	<queryString language="SQL">
 		<![CDATA[SELECT id,
-	appointment_id,
-	medicine,
-	amount,
-	instructions,
-	observations,
-	"lunchTime"
+       appointment_id,
+       medicine,
+       amount,
+       instructions,
+       "lunchTime",
+       observations
 FROM medical.recipe
 WHERE appointment_id = $P{appointment_id}]]>
 	</queryString>
-	<field name="id" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.name" value="id"/>
-		<property name="com.jaspersoft.studio.field.label" value="id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
-	</field>
-	<field name="appointment_id" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.name" value="appointment_id"/>
-		<property name="com.jaspersoft.studio.field.label" value="appointment_id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
-	</field>
-	<field name="medicine" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="medicine"/>
-		<property name="com.jaspersoft.studio.field.label" value="medicine"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
-	</field>
-	<field name="amount" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="amount"/>
-		<property name="com.jaspersoft.studio.field.label" value="amount"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
-	</field>
-	<field name="instructions" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="instructions"/>
-		<property name="com.jaspersoft.studio.field.label" value="instructions"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
-	</field>
-	<field name="observations" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="observations"/>
-		<property name="com.jaspersoft.studio.field.label" value="observations"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
-	</field>
-	<field name="lunchTime" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="lunchTime"/>
-		<property name="com.jaspersoft.studio.field.label" value="lunchTime"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="recipe"/>
-	</field>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="appointment_id" class="java.lang.Integer"/>
+	<field name="medicine" class="java.lang.String"/>
+	<field name="amount" class="java.lang.String"/>
+	<field name="instructions" class="java.lang.String"/>
+	<field name="lunchTime" class="java.lang.String"/>
+	<field name="observations" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
 		<band height="50" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="10" width="555" height="30" uuid="fc074f13-d914-47b6-8b80-28c99f7b7206"/>
+				<reportElement x="0" y="20" width="555" height="30" uuid="9a7cf38d-e4b7-4d7f-895c-58a842f7b2a7"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
@@ -70,7 +38,7 @@ WHERE appointment_id = $P{appointment_id}]]>
 	<columnHeader>
 		<band height="30" splitType="Stretch">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="150" height="30" backcolor="#E6E6E6" uuid="7f73ba00-034c-4fb9-816e-b070270d7ec8"/>
+				<reportElement mode="Opaque" x="0" y="0" width="150" height="30" backcolor="#E6E6E6" uuid="11e9bacc-b6d2-47e5-a7ab-25231319cc7b"/>
 				<box>
 					<pen lineWidth="0.5"/>
 				</box>
@@ -80,17 +48,17 @@ WHERE appointment_id = $P{appointment_id}]]>
 				<text><![CDATA[Medicamento]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="150" y="0" width="80" height="30" backcolor="#E6E6E6" uuid="e4a90b35-6d44-4453-971a-4cba3c4d4143"/>
+				<reportElement mode="Opaque" x="150" y="0" width="60" height="30" backcolor="#E6E6E6" uuid="26ef93b5-82eb-44e6-aa3d-4756ed958a43"/>
 				<box>
 					<pen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Cantidad]]></text>
+				<text><![CDATA[Cant.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="230" y="0" width="160" height="30" backcolor="#E6E6E6" uuid="fdf02c49-2b1e-451f-ac7c-151ace3c09ae"/>
+				<reportElement mode="Opaque" x="210" y="0" width="140" height="30" backcolor="#E6E6E6" uuid="ca922d23-12d3-409a-8ae5-a885e9de2678"/>
 				<box>
 					<pen lineWidth="0.5"/>
 				</box>
@@ -100,21 +68,41 @@ WHERE appointment_id = $P{appointment_id}]]>
 				<text><![CDATA[Instrucciones]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="390" y="0" width="165" height="30" backcolor="#E6E6E6" uuid="6a9869bd-810e-4fe6-bf4b-6cb9f72011f2"/>
+				<reportElement mode="Opaque" x="350" y="0" width="65" height="30" backcolor="#E6E6E6" uuid="e6b37fcc-7609-43a0-9ba6-5f8e51935585"/>
 				<box>
 					<pen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Horario]]></text>
+				<text><![CDATA[Desayuno]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="415" y="0" width="65" height="30" backcolor="#E6E6E6" uuid="28c152da-1a1a-4d63-b637-fef64d402a3f"/>
+				<box>
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Almuerzo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="480" y="0" width="75" height="30" backcolor="#E6E6E6" uuid="0bfebd5b-f091-4e03-9569-1fb52baa5978"/>
+				<box>
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cena]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="40" splitType="Stretch">
+		<band height="35" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="150" height="40" uuid="1cf15203-606d-4280-8edc-524dde96bec8"/>
+				<reportElement x="0" y="0" width="150" height="35" uuid="d8b09e9f-12b9-4e06-9f06-5a4b40ad8475"/>
 				<box leftPadding="5">
 					<pen lineWidth="0.5"/>
 				</box>
@@ -122,7 +110,7 @@ WHERE appointment_id = $P{appointment_id}]]>
 				<textFieldExpression><![CDATA[$F{medicine}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="150" y="0" width="80" height="40" uuid="daa56478-8d0c-4a95-ab30-5ae737d203a4"/>
+				<reportElement x="150" y="0" width="60" height="35" uuid="6d07dc08-4a99-465b-be06-5dd618d90e04"/>
 				<box leftPadding="5">
 					<pen lineWidth="0.5"/>
 				</box>
@@ -130,7 +118,7 @@ WHERE appointment_id = $P{appointment_id}]]>
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="230" y="0" width="160" height="40" uuid="e0806c08-abae-494c-ada8-c273b1887f6c"/>
+				<reportElement x="210" y="0" width="140" height="35" uuid="4b5cedb4-d53f-4aba-adbe-33bcb3c14f6b"/>
 				<box leftPadding="5" rightPadding="5">
 					<pen lineWidth="0.5"/>
 				</box>
@@ -138,19 +126,35 @@ WHERE appointment_id = $P{appointment_id}]]>
 				<textFieldExpression><![CDATA[$F{instructions}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="390" y="0" width="165" height="40" uuid="f62036ac-3eac-4d46-a5d4-751536dd5dc9"/>
-				<box leftPadding="5">
+				<reportElement x="350" y="0" width="65" height="35" uuid="63b4994e-7ae8-4297-86c0-eb54c3ea9b54"/>
+				<box>
 					<pen lineWidth="0.5"/>
 				</box>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{lunchTime}]]></textFieldExpression>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lunchTime} != null && $F{lunchTime}.contains("desayuno") ? "X" : ""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="415" y="0" width="65" height="35" uuid="d7ad8903-fee5-4ad2-a3d9-89e052a6ff23"/>
+				<box>
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lunchTime} != null && $F{lunchTime}.contains("almuerzo") ? "X" : ""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="480" y="0" width="75" height="35" uuid="11d393f6-df61-4ea0-bc48-6e0c052d5e4d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lunchTime} != null && $F{lunchTime}.contains("cena") ? "X" : ""]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<columnFooter>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="555" height="20" uuid="6e26ee9f-0903-4792-adbf-0e5b440076f0"/>
+				<reportElement x="0" y="0" width="555" height="20" uuid="4400e45e-ad36-457d-8ba8-bf72051963ed"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isItalic="true"/>
 				</textElement>
@@ -161,7 +165,7 @@ WHERE appointment_id = $P{appointment_id}]]>
 	<summary>
 		<band height="60" splitType="Stretch">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="555" height="60" uuid="0af69cb1-11b9-4175-b116-cf108f950d85"/>
+				<reportElement x="0" y="0" width="555" height="60" uuid="872352fd-25aa-4ec6-b548-47c407c9ff1e"/>
 				<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
 					<pen lineWidth="0.5"/>
 				</box>

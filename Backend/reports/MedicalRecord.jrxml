@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MedicalRecord" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="869505da-65d1-483c-a5dc-4860cd9bf8c9">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Fenix Sercer"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="FenixWeb"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="patient_id" class="java.lang.Long">
 		<defaultValueExpression><![CDATA[11L]]></defaultValueExpression>
@@ -432,7 +432,7 @@ ORDER BY medical.appointments.appointment_date DESC]]>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "MedicalRecord_Diagnosis.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="-20" y="390" width="555" height="100" uuid="1e0a5c03-edf6-427c-928e-030c28a8472f"/>
+				<reportElement x="-20" y="390" width="555" height="100" uuid="ab700188-c01f-4f84-a7ba-2023695d3c9c"/>
 				<subreportParameter name="appointment_id">
 					<subreportParameterExpression><![CDATA[$F{appointment_id}]]></subreportParameterExpression>
 				</subreportParameter>
