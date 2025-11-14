@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 import os
 from pyreportjasper import PyReportJasper
 from datetime import datetime
@@ -7,8 +7,7 @@ import logging
 import psycopg2
 import base64
 import traceback
-from fastapi.responses import FileResponse
-
+from urllib.parse import urlparse
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -16,15 +15,70 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/reports", tags=["reports"])
 
 
+# Parsear DATABASE_URL para extraer credenciales
+def parse_database_url():
+    """Extraer información de conexión desde DATABASE_URL"""
+    database_url = os.getenv("DATABASE_URL")
+
+    if not database_url:
+        raise ValueError("DATABASE_URL no está configurado en las variables de entorno")
+
+    # Remover el prefijo postgresql+psycopg2:// o postgresql://
+    url = database_url
+    if url.startswith("postgresql+psycopg2://"):
+        url = url.replace("postgresql+psycopg2://", "postgresql://")
+    elif url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://")
+
+    parsed = urlparse(url)
+
+    return {
+        'host': parsed.hostname,
+        'port': parsed.port or 5432,
+        'database': parsed.path.lstrip('/'),
+        'user': parsed.username,
+        'password': parsed.password
+    }
+
+
+# Obtener configuración de la base de datos
+db_info = parse_database_url()
+DB_HOST = db_info['host']
+DB_PORT = db_info['port']
+DB_NAME = db_info['database']
+DB_USER = db_info['user']
+DB_PASSWORD = db_info['password']
+
+logger.info(f"📊 Configuración DB - Host: {DB_HOST}, Port: {DB_PORT}, Database: {DB_NAME}, User: {DB_USER}")
+
+# Rutas de archivos (opcionales como variables de entorno)
+REPORTS_DIR = os.getenv("REPORTS_DIR", "reports")
+OUTPUT_DIR = os.getenv("OUTPUT_DIR", "reports/output")
+
+
+def get_db_config():
+    """Obtener configuración de base de datos para JasperReports"""
+    return {
+        'driver': 'postgres',
+        'username': DB_USER,
+        'password': DB_PASSWORD,
+        'host': DB_HOST,
+        'database': DB_NAME,
+        'port': str(DB_PORT),
+        'jdbc_driver': 'org.postgresql.Driver',
+        'jdbc_url': f'jdbc:postgresql://{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    }
+
+
 def verify_database_connection(patient_id: int):
     """Verificar que la conexión y los datos existen"""
     try:
         conn = psycopg2.connect(
-            host="13.220.204.70",
-            port=5432,
-            database="fenixweb",
-            user="admin",
-            password="admin123"
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
         )
         cursor = conn.cursor()
 
@@ -55,10 +109,9 @@ def verify_database_connection(patient_id: int):
         return False
 
 
-
-
 @router.get("/medical-history/{patient_id}")
 def get_medical_history_report(patient_id: int):
+    """Genera reporte de historial médico del paciente"""
 
     if not verify_database_connection(patient_id):
         logger.error(f"❌ Paciente {patient_id} no encontrado o no tiene citas")
@@ -67,13 +120,13 @@ def get_medical_history_report(patient_id: int):
             detail=f"Paciente {patient_id} no encontrado o no tiene citas registradas"
         )
 
-    input_file = os.path.abspath("reports/MedicalRecord.jrxml")
+    input_file = os.path.abspath(os.path.join(REPORTS_DIR, "MedicalRecord.jrxml"))
 
     if not os.path.exists(input_file):
         logger.error(f"❌ Archivo no encontrado: {input_file}")
         raise HTTPException(status_code=404, detail="Archivo de reporte no encontrado")
 
-    output_dir = os.path.abspath("reports/output")
+    output_dir = os.path.abspath(OUTPUT_DIR)
     os.makedirs(output_dir, exist_ok=True)
 
     timestamp = int(datetime.now().timestamp())
@@ -82,27 +135,17 @@ def get_medical_history_report(patient_id: int):
     try:
         pyreportjasper = PyReportJasper()
 
-        db_config = {
-            'driver': 'postgres',
-            'username': 'admin',
-            'password': 'admin123',
-            'host': 'localhost',
-            'database': 'fenixweb3',
-            'port': '5432',
-            'jdbc_driver': 'org.postgresql.Driver',
-            'jdbc_url': 'jdbc:postgresql://localhost:5432/fenixweb3'
-        }
-
         parameters = {
             'patient_id': patient_id,
-            'SUBREPORT_DIR': os.path.abspath("reports") + os.sep
+            'SUBREPORT_DIR': os.path.abspath(REPORTS_DIR) + os.sep
         }
+
         pyreportjasper.config(
             input_file=input_file,
             output_file=output_file,
             output_formats=["pdf"],
             parameters=parameters,
-            db_connection=db_config
+            db_connection=get_db_config()
         )
 
         pyreportjasper.process_report()
@@ -117,10 +160,11 @@ def get_medical_history_report(patient_id: int):
             pdf_bytes = pdf.read()
             pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
 
+        # Limpiar archivo temporal
         try:
             os.remove(pdf_file)
-        except:
-            pass
+        except Exception as cleanup_error:
+            logger.warning(f"No se pudo eliminar archivo temporal: {cleanup_error}")
 
         return JSONResponse(
             content={
@@ -140,18 +184,17 @@ def get_medical_history_report(patient_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-from fastapi.responses import FileResponse
-
-
 @router.get("/medical-certificate/{appointment_id}")
-def get_medical_history_report(appointment_id: int):
-    input_file = os.path.abspath("reports/medicalCertificate.jrxml")
+def get_medical_certificate_report(appointment_id: int):
+    """Genera certificado médico para una cita"""
+
+    input_file = os.path.abspath(os.path.join(REPORTS_DIR, "medicalCertificate.jrxml"))
 
     if not os.path.exists(input_file):
         logger.error(f"❌ Archivo no encontrado: {input_file}")
         raise HTTPException(status_code=404, detail="Archivo de reporte no encontrado")
 
-    output_dir = os.path.abspath("reports/output")
+    output_dir = os.path.abspath(OUTPUT_DIR)
     os.makedirs(output_dir, exist_ok=True)
 
     timestamp = int(datetime.now().timestamp())
@@ -159,17 +202,6 @@ def get_medical_history_report(appointment_id: int):
 
     try:
         pyreportjasper = PyReportJasper()
-
-        db_config = {
-            'driver': 'postgres',
-            'username': 'postgres',
-            'password': 'sa',
-            'host': 'localhost',
-            'database': 'fenixweb3',
-            'port': '5432',
-            'jdbc_driver': 'org.postgresql.Driver',
-            'jdbc_url': 'jdbc:postgresql://localhost:5432/fenixweb3'
-        }
 
         parameters = {
             'APPOINTMENT_ID': appointment_id,
@@ -180,7 +212,7 @@ def get_medical_history_report(appointment_id: int):
             output_file=output_file,
             output_formats=["pdf"],
             parameters=parameters,
-            db_connection=db_config
+            db_connection=get_db_config()
         )
 
         pyreportjasper.process_report()
@@ -191,7 +223,6 @@ def get_medical_history_report(appointment_id: int):
             logger.error(f"❌ PDF no generado: {pdf_file}")
             raise HTTPException(status_code=500, detail="PDF no generado")
 
-        # Retornar el archivo directamente para descarga
         filename = f"certificado_medico_{appointment_id}.pdf"
 
         return FileResponse(
